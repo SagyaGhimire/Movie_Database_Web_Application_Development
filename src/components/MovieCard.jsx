@@ -1,17 +1,36 @@
 function MovieCard(props) {
+
+  let badgeColor = "";
+
+  if (props.rating >= 8) {
+    badgeColor = "bg-green-300";
+  } else if (props.rating >= 5) {
+    badgeColor = "bg-amber-100";
+  } else {
+    badgeColor = "bg-red-300";
+  }
+
   return (
-    <div className="card">
-      <div className="poster">
+    <div className="bg-blue-100 shadow-md p-4 w-64">
+
+      {/* Poster Placeholder */}
+      <div className="h-40 bg-gray-300 flex items-center justify-center mb-4">
         Poster
       </div>
 
-      <h2>{props.title}</h2>
+      <h2 className="text-xl text-gray-700 font-bold">{props.title}</h2>
 
-      <p>Genre: {props.genre}</p>
+      <p className="text-gray-600">Genre of Movie: {props.genre}</p>
 
-      <p>Year: {props.year}</p>
+      <p className="text-gray-600">Year of Release: {props.year}</p>
 
-      <span>{props.rating}</span>
+      {/* Rating Badge */}
+      <span
+        className={`${badgeColor} text-black px-3 py-1 rounded-full font-semibold inline-block mt-2`}
+      >
+      Rating: {props.rating}
+      </span>
+
     </div>
   );
 }
