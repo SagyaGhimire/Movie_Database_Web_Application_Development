@@ -1,3 +1,4 @@
+import star from "../assets/star.svg";
 function MovieCard(props) {
 
   let badgeColor = "";
@@ -5,7 +6,7 @@ function MovieCard(props) {
   if (props.rating >= 8) {
     badgeColor = "bg-green-200";
   } else if (props.rating >= 5) {
-    badgeColor = "bg-amber-100";
+    badgeColor = "bg-amber-200";
   } else {
     badgeColor = "bg-red-300";
   }
@@ -26,9 +27,11 @@ function MovieCard(props) {
 
       {/* Rating Badge */}
       <span
-        className={`${badgeColor} text-gray-800 px-3 py-1 rounded-full font-semibold inline-block mt-2`}
+        className={`${badgeColor} text-gray-800 px-3 py-1 rounded-md font-semibold inline-flex flex-col items-center justify-center mt-2`}
+         
       >
-      Rating: {props.rating}
+       <img src={star} alt="Star" className="w-4 h-4 mb-1" />
+       Rating: {props.rating}
       </span>
 
     </div>
