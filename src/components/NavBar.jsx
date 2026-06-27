@@ -1,13 +1,9 @@
-function Navbar() {
+function NavBar() {
   return (
-    <nav className="bg-black text-white p-4">
-      <ul className="flex gap-6">
-        <li className="cursor-pointer">Browse</li>
-        <li className="cursor-pointer">Watchlist</li>
-        <li className="cursor-pointer">Add Movie</li>
-      </ul>
+    <nav>
+      <h1 className="text-2xl text-red-400 font-bold">Movie Database</h1>
     </nav>
   );
 }
 
-export default Navbar;
+export default NavBar;
