@@ -14,6 +14,7 @@ function MovieGrid() {
           year={movie.year}
           rating={movie.rating}
         />
+        
       ))}
     </div>
   );
