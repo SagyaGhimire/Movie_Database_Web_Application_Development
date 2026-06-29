@@ -1,3 +1,5 @@
+
+{/*This contains the list of movies with their details like title, genre, year and rating*/}
 const movies = [
   {
     id: 1,
