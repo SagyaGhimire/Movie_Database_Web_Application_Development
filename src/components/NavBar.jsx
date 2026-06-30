@@ -1,25 +1,34 @@
-
-{/*This is the NavBar component(function) which is used to display the navigation bar*/}
-function NavBar() {
-
-  {/*This section is for the navigation bar which contains the title and the links to different pages*/}
+function NavBar({ setPage }) {
   return (
-    <nav>
-      <h1 className="text-2xl font-bold text-gray-800 text-center">Movie Database</h1>
+    <nav className="bg-[#AACDDC] p-5 flex justify-between items-center shadow-md">
 
-      {/*This section is for the links to different pages Browse, Watchlist and Add_Movie*/}
-      <div className="flex gap-6 justify-center space-x-4 mt-4 text-gray-800">
-        <a href="#" className="font-semibold text-gray-700 font-medium hover:text-stone-500 transition-colors">
+      <h1 className="text-3xl font-bold text-gray-800">
+        Movie Database
+      </h1>
+
+      <div className="flex gap-6">
+
+        <button
+          onClick={() => setPage("browse")}
+          className="text-gray-800 font-semibold hover:text-[#81A6C6]"
+        >
           Browse
-        </a>
-        
-        <a href="#" className="font-semibold text-gray-700 font-medium hover:text-stone-500 transition-colors">
-          Watchlist
-        </a>
+        </button>
 
-        <a href="#" className="font-semibold text-gray-700 font-medium hover:text-stone-500 transition-colors">
+        <button
+          onClick={() => setPage("watchlist")}
+          className="text-gray-800 font-semibold hover:text-[#81A6C6]"
+        >
+          Watchlist
+        </button>
+
+        <button
+          onClick={() => setPage("add")}
+          className="text-gray-800 font-semibold hover:text-[#81A6C6]"
+        >
           Add Movie
-        </a>
+        </button>
+
       </div>
 
     </nav>
@@ -27,4 +36,3 @@ function NavBar() {
 }
 
 export default NavBar;
-

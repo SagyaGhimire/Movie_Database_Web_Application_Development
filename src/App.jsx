@@ -1,14 +1,23 @@
+import { useState } from "react";
+
 import NavBar from "./components/NavBar";
 import MovieGrid from "./components/MovieGrid";
+import Watchlist from "./components/Watchlist";
 import AddMovie from "./components/AddMovie";
+import Browse from "./components/Browse";
 
-{/*This is the App component(function) which is used to display the NavBar and MovieGrid components*/}
 function App() {
+
+  const [page, setPage] = useState("browse");
+
   return (
-    <div>
-      <NavBar />
-      <MovieGrid />
-      <AddMovie />
+    <div className="min-h-screen bg-[#DBDFEA]">
+
+      <NavBar setPage={setPage} />
+      {page === "browse" && <Browse />}
+      {page === "watchlist" && <Watchlist />}
+      {page === "add" && <AddMovie />}
+
     </div>
   );
 }

@@ -1,4 +1,6 @@
+import { useState } from "react";
 function AddMovie() {
+
   const [title, setTitle] = useState('');
   const [genre, setGenre] = useState('');
   const [year, setYear] = useState('');
@@ -6,7 +8,7 @@ function AddMovie() {
   
  return (
   <form>
-  <div className="bg-stone-100 p-6 w-96 border rounded">
+  <div className="bg-[#D2C4B4] p-6 w-96 border border-[#D2C4B4] rounded">
     <h2 className="text-2xl font-bold text-gray-800 mb-4">
       Add New Movie
     </h2>
@@ -20,7 +22,7 @@ function AddMovie() {
         placeholder="Enter a movie name"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
       />
     </div>
 
@@ -33,7 +35,7 @@ function AddMovie() {
         placeholder="Enter a genre"
         value={genre}
         onChange={(e) => setGenre(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
       />
     </div>
 
@@ -46,7 +48,7 @@ function AddMovie() {
         placeholder="Enter the release year"
         value={year}
         onChange={(e) => setYear(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
       />
     </div>
 
@@ -62,20 +64,20 @@ function AddMovie() {
         placeholder="Enter the rating"
         value={rating}
         onChange={(e) => setRating(e.target.value)}
-        className="w-full border rounded p-2"
+        className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
       />
     </div>
 
     <button
       type="submit"
-      className="bg-stone-300 text-gray-800 px-4 py-2 rounded hover:bg-stone-400"
+      className="bg-[#AACDDC] text-gray-800 px-4 py-2 rounded hover:bg-[#81A6C6]"
     >
       Add Movie
     </button>
 
     <button
       type="button"
-      className="bg-stone-300 text-gray-800 px-4 py-2 rounded hover:bg-stone-400 ml-2"
+      className="bg-[#D2C4B4] text-gray-800 px-4 py-2 rounded hover:bg-[#AACDDC] ml-2"
     >
       Cancel
     </button>
