@@ -22,10 +22,11 @@ function MovieCard({ movie, setSelectedMovie }) {
       className="bg-stone-100 p-4 border rounded flex gap-4 cursor-pointer hover:shadow-lg transition"
     >
 
-      {/* This is for the Poster part for now later i will replace it with an actual image */}
-      <div className="h-40 w-28 bg-stone-300 flex items-center justify-center rounded">
-        Poster
-      </div>
+      {/* This is for displaying the movie poster */}
+      <img
+       src={movie.poster}
+       alt={movie.title}
+       className="h-40 w-28 object-cover rounded"/>
 
       {/* This section is for the Movie Details */}
       <div className="flex flex-col justify-between">

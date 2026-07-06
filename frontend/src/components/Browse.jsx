@@ -20,6 +20,30 @@ function Browse({
     movie.title.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Function to add or remove a movie from watchlist
+function toggleWatchlist() {
+
+  const exists = watchlist.some(
+    (movie) => movie.id === selectedMovie.id
+  );
+
+  if (exists) {
+
+    setWatchlist(
+      watchlist.filter(
+        (movie) => movie.id !== selectedMovie.id
+      )
+    );
+
+  } else {
+
+    setWatchlist([
+      ...watchlist,
+      selectedMovie,
+    ]);
+
+  }
+}
   return (
     <div className="p-6">
 
@@ -101,22 +125,12 @@ function Browse({
           </ul>
 
           <button
-            className="mt-5 bg-[#AACDDC] px-4 py-2 rounded"
-            onClick={() => {
-
-              const exists = watchlist.find(
-                (movie) => movie.id === selectedMovie.id
-              );
-
-              if (!exists) {
-                setWatchlist([...watchlist, selectedMovie]);
-              }
-
-            }}
-          >
-            Add to Watchlist
-          </button>
-
+          onClick={toggleWatchlist}
+          className="mt-5 bg-[#AACDDC] px-4 py-2 rounded hover:bg-[#81A6C6]">
+            {watchlist.some((movie) => movie.id === selectedMovie.id)
+            ? "Remove from Watchlist"
+            : "Add to Watchlist"}
+            </button>
         </div>
 
       )}

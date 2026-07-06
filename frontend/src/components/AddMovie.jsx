@@ -9,6 +9,7 @@ function AddMovie({ movies, setMovies, setPage }) {
   const [director, setDirector] = useState("");
   const [rating, setRating] = useState("");
   const [synopsis, setSynopsis] = useState("");
+  const [poster, setPoster] = useState("");``
 
   // Function to add a new movie
   function handleSubmit(e) {
@@ -36,6 +37,7 @@ function AddMovie({ movies, setMovies, setPage }) {
       year: Number(year),
       director,
       rating: Number(rating),
+      poster,
       synopsis,
       cast: [],
     };
@@ -50,7 +52,8 @@ function AddMovie({ movies, setMovies, setPage }) {
     setDirector("");
     setRating("");
     setSynopsis("");
-
+    setPoster(""); 
+    
     // Go back to Browse page
     setPage("browse");
   }
@@ -132,6 +135,19 @@ function AddMovie({ movies, setMovies, setPage }) {
           />
 
         </div>
+        {/* Poster URL */}
+        <div className="mb-3">
+          <label className="block text-gray-700 mb-1">
+             Poster URL:
+             </label>
+             <input
+             type="text"
+             placeholder="Enter poster image URL"
+             value={poster}
+             onChange={(e) => setPoster(e.target.value)}
+             className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
+             />
+             </div>
 
         {/* Rating */}
         <div className="mb-3">
