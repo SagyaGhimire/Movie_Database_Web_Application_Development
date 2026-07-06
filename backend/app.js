@@ -50,6 +50,16 @@ app.post("/watchlist/:id", (req, res) => {
 });
 
 
+// remove movie from watchlist
+app.delete("/watchlist/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const movieIndex = watchlist.findIndex(m => m.id === id);
+    if (movieIndex === -1) return res.status(404).json({ message: "Movie not found in watchlist" });
+    watchlist.splice(movieIndex, 1);
+    return res.json({ message: "Movie removed from watchlist" });
+});
+
+
 app.listen(PORT, () => {
     console.log(`Backend is running on port ${PORT}`);
  })
