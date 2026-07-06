@@ -41,7 +41,7 @@ function MovieCard(props) {
       <span
         className={`${badgeColor} mt-3 px-3 py-2 rounded inline-flex items-center gap-2`}
       >
-        <img src={star} alt="Star" className="w-4 h-4" />
+        <img src={star} alt="Star" className="w-4 h-4" /> 
         Rating: {props.rating}
       </span>
     </div>

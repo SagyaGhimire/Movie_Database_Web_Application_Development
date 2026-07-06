@@ -1,11 +1,135 @@
 import MovieGrid from "./MovieGrid";
 
-function Browse() {
+function Browse({
+  movies,
+  search,
+  setSearch,
+
+  selectedMovie,
+  setSelectedMovie,
+
+  watchlist,
+  setWatchlist,
+
+  totalMovies,
+  averageRating,
+}) {
+
+  // Filter movies according to search text
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Browse Movies</h2>
 
-      <MovieGrid />
+      {/* Dashboard */}
+      <div className="bg-[#AACDDC] rounded p-4 mb-6 flex gap-10">
+
+        <div>
+          <h3 className="font-bold text-lg">
+            Total Movies
+          </h3>
+
+          <p className="text-2xl">
+            {totalMovies}
+          </p>
+        </div>
+
+        <div>
+          <h3 className="font-bold text-lg">
+            Average Rating
+          </h3>
+
+          <p className="text-2xl">
+            {averageRating}
+          </p>
+        </div>
+
+      </div>
+
+      {/* Search */}
+      <input
+        type="text"
+        placeholder="Search movie..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full p-3 rounded border border-[#AACDDC] mb-6"
+      />
+
+      {/* Movie Detail */}
+      {selectedMovie && (
+
+        <div className="bg-[#D2C4B4] rounded p-6 mb-6">
+
+          <h2 className="text-3xl font-bold">
+            {selectedMovie.title}
+          </h2>
+
+          <p className="mt-2">
+            <strong>Genre:</strong> {selectedMovie.genre}
+          </p>
+
+          <p>
+            <strong>Year:</strong> {selectedMovie.year}
+          </p>
+
+          <p>
+            <strong>Director:</strong> {selectedMovie.director}
+          </p>
+
+          <p>
+            <strong>Rating:</strong> {selectedMovie.rating}
+          </p>
+
+          <p className="mt-3">
+            <strong>Synopsis:</strong>
+          </p>
+
+          <p>
+            {selectedMovie.synopsis}
+          </p>
+
+          <p className="mt-3">
+            <strong>Cast:</strong>
+          </p>
+
+          <ul className="list-disc ml-6">
+            {selectedMovie.cast.map((actor, index) => (
+              <li key={index}>{actor}</li>
+            ))}
+          </ul>
+
+          <button
+            className="mt-5 bg-[#AACDDC] px-4 py-2 rounded"
+            onClick={() => {
+
+              const exists = watchlist.find(
+                (movie) => movie.id === selectedMovie.id
+              );
+
+              if (!exists) {
+                setWatchlist([...watchlist, selectedMovie]);
+              }
+
+            }}
+          >
+            Add to Watchlist
+          </button>
+
+        </div>
+
+      )}
+
+      {/* Movie Grid */}
+      <MovieGrid
+
+        movies={filteredMovies}
+
+        setSelectedMovie={setSelectedMovie}
+
+      />
+
     </div>
   );
 }
