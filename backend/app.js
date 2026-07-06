@@ -59,6 +59,16 @@ app.delete("/watchlist/:id", (req, res) => {
     return res.json({ message: "Movie removed from watchlist" });
 });
 
+//update movie by id
+app.put("/movies/:id", (req, res) => {
+    console.log(req.body); 
+    const id = parseInt(req.params.id);
+    const movieIndex = movies.findIndex(m => m.id === id);
+    if (movieIndex === -1) return res.status(404).json({ message: "Movie not found" });
+    const updatedMovie = { ...movies[movieIndex], ...req.body };
+    movies[movieIndex] = updatedMovie;
+    return res.json({ message: "Movie updated successfully", movie: updatedMovie });
+});
 
 app.listen(PORT, () => {
     console.log(`Backend is running on port ${PORT}`);
