@@ -18,16 +18,10 @@ app.post("/movies", (req, res) => {
     return res.status(201).json({ message: "Movie added successfully", movie });
 });
 
-{/*this part is for getting a single movie using its id*/}
-app.get("/api/movies/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const movie = movies.find((movie) => movie.id === id);
-    if (!movie) {
-        return res.status(404).json({
-            message: "Movie not found"
-        });
-
-    }
+{/*GET Single Movie by ID*/}
+app.get("/movies/:id", (req, res) => {
+    const movie = movies.find(m => m.id === parseInt(req.params.id));
+    if (!movie) return res.status(404).json({ message: "Movie not found" });
     return res.json(movie);
 });
 
