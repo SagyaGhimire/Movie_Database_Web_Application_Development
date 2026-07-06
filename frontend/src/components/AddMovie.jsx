@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-function AddMovie({ movies, setMovies, setPage }) {
+function AddMovie({ movies, setMovies, setPage, editingMovie, setEditingMovie }) {
 
   // States for controlled inputs
   const [title, setTitle] = useState("");
@@ -9,7 +9,20 @@ function AddMovie({ movies, setMovies, setPage }) {
   const [director, setDirector] = useState("");
   const [rating, setRating] = useState("");
   const [synopsis, setSynopsis] = useState("");
-  const [poster, setPoster] = useState("");``
+  const [poster, setPoster] = useState("");
+
+  // Populate form if editing a movie
+  useEffect(() => {
+    if (editingMovie) {
+      setTitle(editingMovie.title);
+      setGenre(editingMovie.genre);
+      setYear(editingMovie.year);
+      setDirector(editingMovie.director);
+      setRating(editingMovie.rating);
+      setPoster(editingMovie.poster);
+      setSynopsis(editingMovie.synopsis);
+    }
+  }, [editingMovie]);
 
   // Function to add a new movie
   function handleSubmit(e) {
@@ -29,21 +42,46 @@ function AddMovie({ movies, setMovies, setPage }) {
       return;
     }
 
-    // Create new movie object
-    const newMovie = {
-      id: movies.length + 1,
-      title,
-      genre,
-      year: Number(year),
-      director,
-      rating: Number(rating),
-      poster,
-      synopsis,
-      cast: [],
-    };
+    // If editing, update the existing movie
+    if (editingMovie) {
 
-    // Add movie to movies state
-    setMovies([...movies, newMovie]);
+      const updatedMovies = movies.map((movie) =>
+        movie.id === editingMovie.id
+          ? {
+              ...movie,
+              title,
+              genre,
+              year: Number(year),
+              director,
+              rating: Number(rating),
+              poster,
+              synopsis,
+            }
+          : movie
+      );
+
+      setMovies(updatedMovies);
+
+      setEditingMovie(null);
+
+    } else {
+
+      // Create new movie object
+      const newMovie = {
+        id: movies.length + 1,
+        title,
+        genre,
+        year: Number(year),
+        director,
+        rating: Number(rating),
+        poster,
+        synopsis,
+        cast: [],
+      };
+
+      // Add movie to movies state
+      setMovies([...movies, newMovie]);
+    }
 
     // Clear the form
     setTitle("");
@@ -52,8 +90,8 @@ function AddMovie({ movies, setMovies, setPage }) {
     setDirector("");
     setRating("");
     setSynopsis("");
-    setPoster(""); 
-    
+    setPoster("");
+
     // Go back to Browse page
     setPage("browse");
   }
@@ -65,7 +103,7 @@ function AddMovie({ movies, setMovies, setPage }) {
       <div className="bg-[#D2C4B4] p-6 w-[500px] mx-auto mt-8 border border-[#D2C4B4] rounded">
 
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
-          Add New Movie
+          {editingMovie ? "Edit Movie" : "Add New Movie"}
         </h2>
 
         {/* Movie Title */}
@@ -135,19 +173,23 @@ function AddMovie({ movies, setMovies, setPage }) {
           />
 
         </div>
+
         {/* Poster URL */}
         <div className="mb-3">
+
           <label className="block text-gray-700 mb-1">
-             Poster URL:
-             </label>
-             <input
-             type="text"
-             placeholder="Enter poster image URL"
-             value={poster}
-             onChange={(e) => setPoster(e.target.value)}
-             className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
-             />
-             </div>
+            Poster URL:
+          </label>
+
+          <input
+            type="text"
+            placeholder="Enter poster image URL"
+            value={poster}
+            onChange={(e) => setPoster(e.target.value)}
+            className="w-full border border-[#D2C4B4] rounded p-2 bg-white focus:outline-none focus:ring-2 focus:ring-[#81A6C6]"
+          />
+
+        </div>
 
         {/* Rating */}
         <div className="mb-3">
@@ -192,12 +234,15 @@ function AddMovie({ movies, setMovies, setPage }) {
           type="submit"
           className="bg-[#AACDDC] text-gray-800 px-4 py-2 rounded hover:bg-[#81A6C6]"
         >
-          Add Movie
+          {editingMovie ? "Update Movie" : "Add Movie"}
         </button>
 
         <button
           type="button"
-          onClick={() => setPage("browse")}
+          onClick={() => {
+            setEditingMovie(null);
+            setPage("browse");
+          }}
           className="bg-[#D2C4B4] text-gray-800 px-4 py-2 rounded hover:bg-[#AACDDC] ml-2"
         >
           Cancel

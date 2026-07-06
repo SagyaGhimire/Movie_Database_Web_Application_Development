@@ -24,6 +24,9 @@ function App() {
   // Selected movie for detail view
   const [selectedMovie, setSelectedMovie] = useState(null);
 
+  // Editing movie state
+  const [editingMovie, setEditingMovie] = useState(null);
+
   // Dashboard states
   const [totalMovies, setTotalMovies] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
@@ -72,6 +75,8 @@ function App() {
           totalMovies={totalMovies}
           averageRating={averageRating}
 
+          setEditingMovie={setEditingMovie}
+          setPage={setPage}
         />
 
       )}
@@ -94,7 +99,8 @@ function App() {
           movies={movies}
           setMovies={setMovies}
           setPage={setPage}
-
+          editingMovie={editingMovie}
+          setEditingMovie={setEditingMovie}
         />
 
       )}

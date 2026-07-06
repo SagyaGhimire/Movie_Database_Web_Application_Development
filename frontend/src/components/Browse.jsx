@@ -13,6 +13,8 @@ function Browse({
 
   totalMovies,
   averageRating,
+  setEditingMovie,
+  setPage,
 }) {
 
   // Filter movies according to search text
@@ -131,7 +133,14 @@ function toggleWatchlist() {
             ? "Remove from Watchlist"
             : "Add to Watchlist"}
             </button>
-        </div>
+            
+            <button onClick={() => {
+              setEditingMovie(selectedMovie);
+              setPage("add");
+            }}className="ml-3 bg-yellow-300 px-4 py-2 rounded hover:bg-yellow-400">
+               Edit Movie
+               </button>
+               </div>
 
       )}
 
