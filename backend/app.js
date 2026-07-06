@@ -2,6 +2,7 @@ import express from "express";
 import movies from "./data/movies.js";
 const app = express();
 app.use(express.json()); // middleware to parse incoming JSON requests, array lai json format ma pathauna lai chaixa yo
+let watchlist = [];
 const PORT = 3001; //default port is this in node.js
 
 //creation of api in backend
@@ -33,6 +34,21 @@ app.delete("/movies/:id", (req, res) => {
     movies.splice(movieIndex, 1);
     return res.json({ message: "Movie deleted successfully" });
 });
+
+//view watchlist
+app.get("/watchlist", (req, res) => {
+    return res.json(watchlist);
+});
+
+//add movie to watchlist
+app.post("/watchlist/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const movie = movies.find(m => m.id === id);
+    if (!movie) return res.status(404).json({ message: "Movie not found" });
+    watchlist.push(movie);
+    return res.status(201).json({ message: "Movie added to watchlist", movie });
+});
+
 
 app.listen(PORT, () => {
     console.log(`Backend is running on port ${PORT}`);
