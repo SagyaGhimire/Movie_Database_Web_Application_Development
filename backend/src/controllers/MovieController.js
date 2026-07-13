@@ -77,6 +77,15 @@ export const addToWatchlist = (req, res) => {
         });
     }
 
+    const alreadyExists = watchlist.find((m) => m.id === id);
+
+    if (alreadyExists) {
+        return res.status(400).json({
+            message: "Movie is already in watchlist",
+        });
+    }
+
+
     watchlist.push(movie);
 
     return res.status(201).json({
