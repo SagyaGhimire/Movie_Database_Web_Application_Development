@@ -2,8 +2,10 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import movieRoutes from "./src/routes/movieRoutes.js";
+import dbConnection from "./src/config/db.js";
 
 const app = express();
+dotenv.config();
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
@@ -15,6 +17,8 @@ const PORT = 3000;
 
 // Use all movie routes
 app.use("/", movieRoutes);
+
+await dbConnection(); // Connect to MongoDB
 
 // Start the server
 app.listen(PORT, () => {

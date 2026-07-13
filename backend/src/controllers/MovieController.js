@@ -85,7 +85,6 @@ export const addToWatchlist = (req, res) => {
         });
     }
 
-
     watchlist.push(movie);
 
     return res.status(201).json({
