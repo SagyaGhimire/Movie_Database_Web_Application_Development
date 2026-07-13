@@ -1,4 +1,6 @@
+import dotenv from "dotenv";
 import express from "express";
+import cors from "cors";
 import movieRoutes from "./src/routes/movieRoutes.js";
 
 const app = express();
@@ -6,7 +8,10 @@ const app = express();
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 
-const PORT = 3001;
+// Enable CORS for all routes   
+app.use(cors());
+
+const PORT = 3000;
 
 // Use all movie routes
 app.use("/", movieRoutes);
