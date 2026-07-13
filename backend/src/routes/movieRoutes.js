@@ -1,5 +1,4 @@
 import express from "express";
-
 import {
     getAllMovies,
     addMovie,
@@ -11,6 +10,7 @@ import {
     removeFromWatchlist,
 } from "../controllers/movieController.js";
 
+import { movieRules, validateMovie } from "../validators/movieValidator.js";
 const router = express.Router();
 
 // Movie Routes
@@ -19,13 +19,13 @@ const router = express.Router();
 router.get("/movies", getAllMovies);
 
 // POST movie
-router.post("/movies", addMovie);
+router.post("/movies",movieRules, validateMovie, addMovie);
 
 // GET single movie by ID
 router.get("/movies/:id", getMovieById);
 
 // UPDATE movie
-router.put("/movies/:id", updateMovie);
+router.put("/movies/:id", movieRules, validateMovie, updateMovie);
 
 // DELETE movie
 router.delete("/movies/:id", deleteMovie);
