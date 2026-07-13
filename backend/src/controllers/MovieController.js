@@ -7,7 +7,17 @@ export const getAllMovies = (req, res) => {
 
 // POST movie
 export const addMovie = (req, res) => {
-    const movie = req.body;
+    const movie = {
+        id: movies.length + 1,
+        title: req.body.title,
+        genre: req.body.genre,
+        year: req.body.year,
+        director: req.body.director,
+        rating: req.body.rating,
+        synopsis: req.body.synopsis,
+        poster: req.body.poster || "",
+        cast: req.body.cast || []
+    };
     movies.push(movie);
 
     return res.status(201).json({
