@@ -1,10 +1,18 @@
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import Movie from "./movie.js";
 
+
+
+dotenv.config(
+  {
+    path: ".env"
+  }
+);
 
 {/* This contains the list of movies with their details like title, genre, year, rating, director, synopsis, cast and poster */}
-
 const movies = [
   {
-    id: 1,
     title: "3 Idiots",
     genre: "Comedy/Drama",
     year: 2009,
@@ -21,7 +29,6 @@ const movies = [
   },
 
   {
-    id: 2,
     title: "Dangal",
     genre: "Sports/Drama",
     year: 2016,
@@ -38,7 +45,6 @@ const movies = [
   },
 
   {
-    id: 3,
     title: "Bhool Bhulaiyaa 2",
     genre: "Comedy/Horror",
     year: 2022,
@@ -55,7 +61,6 @@ const movies = [
   },
 
   {
-    id: 4,
     title: "Housefull 4",
     genre: "Comedy",
     year: 2019,
@@ -72,7 +77,6 @@ const movies = [
   },
 
   {
-    id: 5,
     title: "Adipurush",
     genre: "Action/Fantasy",
     year: 2023,
@@ -88,5 +92,10 @@ const movies = [
     ],
   },
 ];
+
+// Connection established to MongoDB
+const connection= mongoose.connect(process.env.mongoURI,{});
+await Movie.deleteMany({}); // Delete all existing movies in the collection
+await Movie.insertMany(movies); // Insert the new list of movies into the collection
 
 export default movies;
