@@ -13,7 +13,7 @@ app.use(express.json());
 // Enable CORS for all routes   
 app.use(cors());
 
-const PORT = 3000;
+const PORT = 3001;
 
 // Use all movie routes
 app.use("/", movieRoutes);
