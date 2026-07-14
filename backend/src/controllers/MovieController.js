@@ -1,12 +1,14 @@
+
 import { movies, watchlist } from "../models/movieModel.js";
 
 // GET all movies
-export const getAllMovies = (req, res) => {
+export const getAllMovies = async (req, res) => {
+    const movies = await getAllMovies();
     return res.json(movies);
 };
 
 // POST movie
-export const addMovie = (req, res) => {
+export const addMovie = async (req, res) => {
     const movie = {
         id: movies.length + 1,
         title: req.body.title,
