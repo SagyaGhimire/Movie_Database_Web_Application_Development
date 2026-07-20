@@ -36,7 +36,12 @@ function App() {
   const [totalMovies, setTotalMovies] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
 
+  // Error and loading states
   const [errors, setErrors] = useState([]);
+  const [isloading, setIsLoading] = useState(true);
+
+
+
   // Dashboard calculation
   useEffect(() => {
 
@@ -59,6 +64,7 @@ function App() {
 
   }, [movies]);
 
+  // Fetch movies and watchlist on component mount
   useEffect(() => {
     async function fetchMovies() {
       try {
@@ -68,6 +74,7 @@ function App() {
         console.error("Error fetching movies:", error);
       }
       finally {
+        setIsLoading(false);
         try {
           const watchlistData = await getWatchlist();
           setWatchlist(watchlistData);
