@@ -11,7 +11,7 @@ export async function getAllMovies() {
 // POST movie
 export async function addMovie(movieData) {
     const movie = new Movie(movieData);
-    await movie.save();
+    await movie.save(); 
     return movie;
 }
 
