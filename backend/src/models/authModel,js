@@ -1,0 +1,13 @@
+import User from "../data/user.js";
+import bcrypt from "bcrypt";
+
+export async function registerUser(userDetails) {
+  return User.create(userDetails);
+}   
+
+export async function loginUser(email, password ) { 
+    const user = User.findOne({ email })
+    const isValid= await bcrypt.compare(password, user.password);
+    return isValid ? user : null;
+}       
+
