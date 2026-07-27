@@ -1,31 +1,25 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
-  },    
+  },
   email: {
     type: String,
     required: true,
     unique: true,
     lowercase: true,
   },
-  password: {       
+  password: {
     type: String,
     required: true,
   },
-  timestamps: true
-}
-);
-const User = mongoose.model("User", userSchema);
-
-User.pre("save", ()=> {
-    if(this.isModified("password")){
-        this.password = bcrypt.hashSync(this.password, 10);
-    }
+}, {
+  timestamps: true,
 });
+const User = mongoose.model("User", userSchema);
 
 export default User;

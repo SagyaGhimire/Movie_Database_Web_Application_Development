@@ -5,14 +5,21 @@ dotenv.config({
     path: ".env",
 });
 
-// Function to connect to MongoDB
 const dbConnection = async () => {
     try {
-        await mongoose.connect(process.env.mongoURI, {});
+        const mongoURI = process.env.MONGO_URI || process.env.mongoURI;
+
+        if (!mongoURI) {
+            console.warn("No MongoDB URI found. Set MONGO_URI in your environment.");
+            return;
+        }
+
+        await mongoose.connect(mongoURI, {});
         console.log("Connected to MongoDB");
     } catch (error) {
-        console.error("MongoDB cannot be connected:", error);   
-            process.exit(); // Exit the process with failure
+        console.error("MongoDB cannot be connected:", error);
+        process.exit(1);
     }
-};  
+};
+
 export default dbConnection;

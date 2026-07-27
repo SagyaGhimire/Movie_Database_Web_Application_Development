@@ -1,8 +1,6 @@
 import { body, validationResult } from "express-validator";
 
-// Validation rules for movie data
 export const movieRules = [
-
     body("title")
         .notEmpty()
         .isString()
@@ -25,9 +23,15 @@ export const movieRules = [
         .trim()
         .withMessage("Director is required"),
 
-    body("rating")
+    body("avgRating")
+        .optional()
         .isFloat({ min: 0, max: 10 })
-        .withMessage("Rating must be between 0 and 10"),
+        .withMessage("Average rating must be between 0 and 10"),
+
+    body("rating")
+        .optional()
+        .isFloat({ min: 0, max: 10 })
+        .withMessage("Average rating must be between 0 and 10"),
 
     body("synopsis")
         .notEmpty()
@@ -35,10 +39,13 @@ export const movieRules = [
         .trim()
         .withMessage("Synopsis is required"),
 
+    body("reviews")
+        .optional()
+        .isArray()
+        .withMessage("Reviews must be an array"),
 ];
 
 export const validateMovie = (req, res, next) => {
-
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {

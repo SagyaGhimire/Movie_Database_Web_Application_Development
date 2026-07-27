@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-// Movie schema is the property of the movie which is used to create the movie model in the database
 const movieSchema = new mongoose.Schema({
-
     title: {
         type: String,
         required: true,
@@ -20,12 +18,6 @@ const movieSchema = new mongoose.Schema({
         required: true,
     },
 
-    rating: {
-        type: Number,
-        min: 0,
-        max: 10,
-    },
-
     director: {
         type: String,
         required: true,
@@ -36,6 +28,25 @@ const movieSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
+    },
+
+    rating: {
+        type: Number,
+        min: 0,
+        max: 10,
+        default: 0,
+    },
+
+    avgRating: {
+        type: Number,
+        min: 0,
+        max: 10,
+        default: 0,
+    },
+
+    reviews: {
+        type: [String],
+        default: [],
     },
 
     poster: {
@@ -49,7 +60,6 @@ const movieSchema = new mongoose.Schema({
             trim: true,
         },
     ],
-
 });
 
 const Movie = mongoose.model("Movie", movieSchema);
