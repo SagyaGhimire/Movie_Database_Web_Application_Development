@@ -9,6 +9,7 @@ import {
     addToWatchlist as addToWatchlistInModel,
     removeFromWatchlist as removeFromWatchlistInModel,
     updateMovie as updateMovieInModel,
+    addReview as addReviewToModel,
 } from "../models/movieModel.js";
 
 export const getAllMovies = async (req, res) => {
@@ -68,8 +69,7 @@ export const deleteMovie = async (req, res) => {
 };
 
 export const getWatchlist = async (req, res) => {
-    const watchlist = await getWatchlistFromModel();
-
+    const watchlist = await getWatchlistFromModel(req.user.id);
     return res.json(watchlist);
 };
 
@@ -88,11 +88,8 @@ export const addToWatchlist = async (req, res) => {
         });
     }
 
-    const watchlist = await getWatchlistFromModel();
-
-    const alreadyExists = watchlist.find(
-        item => item._id.toString() === req.params.id
-    );
+    const watchlist = await getWatchlistFromModel(req.user.id);
+    const alreadyExists = watchlist.some((item) => item._id.toString() === req.params.id);
 
     if (alreadyExists) {
         return res.status(400).json({
@@ -100,7 +97,7 @@ export const addToWatchlist = async (req, res) => {
         });
     }
 
-    await addToWatchlistInModel(req.params.id);
+    await addToWatchlistInModel(req.user.id, req.params.id);
 
     return res.status(201).json({
         message: "Movie added to watchlist",
@@ -115,11 +112,8 @@ export const removeFromWatchlist = async (req, res) => {
         });
     }
 
-    const watchlist = await getWatchlistFromModel();
-
-    const movie = watchlist.find(
-        item => item._id.toString() === req.params.id
-    );
+    const watchlist = await getWatchlistFromModel(req.user.id);
+    const movie = watchlist.find((item) => item._id.toString() === req.params.id);
 
     if (!movie) {
         return res.status(404).json({
@@ -127,7 +121,7 @@ export const removeFromWatchlist = async (req, res) => {
         });
     }
 
-    await removeFromWatchlistInModel(req.params.id);
+    await removeFromWatchlistInModel(req.user.id, req.params.id);
 
     return res.json({
         message: "Movie removed from watchlist",
@@ -155,5 +149,22 @@ export const updateMovie = async (req, res) => {
     return res.json({
         message: "Movie updated successfully",
         movie: updatedMovie,
+    });
+};
+
+export const addReview = async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({ message: "Invalid movie ID" });
+    }
+
+    const movie = await addReviewToModel(req.params.id, req.body, req.user);
+
+    if (!movie) {
+        return res.status(404).json({ message: "Movie not found" });
+    }
+
+    return res.status(201).json({
+        message: "Review added successfully",
+        movie,
     });
 };

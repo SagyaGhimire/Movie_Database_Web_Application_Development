@@ -8,37 +8,23 @@ import {
     getWatchlist,
     addToWatchlist,
     removeFromWatchlist,
+    addReview,
 } from "../controllers/movieController.js";
-
+import authenticate from "../middleware/auth.js";
 import { movieRules, validateMovie } from "../validators/movieValidator.js";
 const router = express.Router();
 
 // Movie Routes
-
-// GET all movies
 router.get("/movies", getAllMovies);
-
-// POST movie
-router.post("/movies",movieRules, validateMovie, addMovie);
-
-// GET single movie by ID
+router.post("/movies", movieRules, validateMovie, addMovie);
 router.get("/movies/:id", getMovieById);
-
-// UPDATE movie
 router.put("/movies/:id", movieRules, validateMovie, updateMovie);
-
-// DELETE movie
 router.delete("/movies/:id", deleteMovie);
+router.post("/movies/:id/reviews", authenticate, addReview);
 
 // Watchlist Routes
-
-// View watchlist
-router.get("/watchlist", getWatchlist);
-
-// Add movie to watchlist
-router.post("/watchlist/:id", addToWatchlist);
-
-// Remove movie from watchlist
-router.delete("/watchlist/:id", removeFromWatchlist);
+router.get("/watchlist", authenticate, getWatchlist);
+router.post("/watchlist/:id", authenticate, addToWatchlist);
+router.delete("/watchlist/:id", authenticate, removeFromWatchlist);
 
 export default router;

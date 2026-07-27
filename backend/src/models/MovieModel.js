@@ -1,6 +1,5 @@
 import Movie from "../../data/movie.js";
-
-let watchlist = [];
+import User from "../../data/user.js";
 
 export async function getAllMovies(filters = {}) {
     const query = {};
@@ -64,24 +63,49 @@ export async function updateMovie(movieId, updatedData) {
     );
 }
 
-export async function getWatchlist() {
-    return watchlist;
+export async function getWatchlist(userId) {
+    const user = await User.findById(userId).populate("watchlist");
+    return user?.watchlist || [];
 }
 
-export async function addToWatchlist(movieId) {
-    const movie = await Movie.findById(movieId);
+export async function addToWatchlist(userId, movieId) {
+    const user = await User.findById(userId);
+    if (!user) return null;
 
-    if (movie) {
-        watchlist.push(movie);
+    if (!user.watchlist.some((id) => id.toString() === movieId)) {
+        user.watchlist.push(movieId);
+        await user.save();
     }
+
+    return await User.findById(userId).populate("watchlist");
+}
+
+export async function removeFromWatchlist(userId, movieId) {
+    const user = await User.findById(userId);
+    if (!user) return null;
+
+    user.watchlist = user.watchlist.filter((id) => id.toString() !== movieId);
+    await user.save();
+    return await User.findById(userId).populate("watchlist");
+}
+
+export async function addReview(movieId, reviewData, user) {
+    const movie = await Movie.findById(movieId);
+    if (!movie) return null;
+
+    const review = {
+        userId: user.id,
+        userName: user.name,
+        rating: Number(reviewData.rating),
+        comment: reviewData.comment || "",
+        createdAt: new Date(),
+    };
+
+    movie.reviews.push(review);
+    const total = movie.reviews.reduce((sum, item) => sum + Number(item.rating), 0);
+    movie.rating = Number((total / movie.reviews.length).toFixed(1));
+    movie.avgRating = movie.rating;
+    await movie.save();
 
     return movie;
 }
-
-export async function removeFromWatchlist(movieId) {
-    watchlist = watchlist.filter(
-        movie => movie._id.toString() !== movieId
-    );
-}
-
-export { watchlist };

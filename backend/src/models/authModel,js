@@ -2,7 +2,13 @@ import User from '../../data/user.js';
 import bcrypt from 'bcrypt';
 
 export async function registerUser(userDetails) {
-  return User.create(userDetails);
+  const hashedPassword = await bcrypt.hash(userDetails.password, 10);
+
+  return User.create({
+    ...userDetails,
+    password: hashedPassword,
+    watchlist: [],
+  });
 }
 
 export async function loginUser(email, password) {
