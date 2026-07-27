@@ -1,22 +1,23 @@
 import axios from 'axios';
+
 const api = axios.create({
-    baseURL: 'http://localhost:3001/movies/', // Replace with your backend API URL
+    baseURL: 'http://localhost:3001/api',
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
-export function getAllMovies() {
-    return api.get('/')
+export function getAllMovies(filters = {}) {
+    return api.get('/movies', { params: filters })
         .then(response => response.data)
-        .catch(error => {   
-        console.error('Error fetching movies:', error);
-        throw error;
-    });
+        .catch(error => {
+            console.error('Error fetching movies:', error);
+            throw error;
+        });
 }
 
 export function addMovie(movieData) {
-    return api.post('/', movieData)
+    return api.post('/movies', movieData)
         .then(response => response.data)
         .catch(error => {
             console.error('Error adding movie:', error);
@@ -25,16 +26,16 @@ export function addMovie(movieData) {
 }
 
 export function getMovieById(movieId) {
-    return api.get(`/${movieId}`)
-        .then(response => response.data)    
-    .catch(error => {
-        console.error(`Error fetching movie with ID ${movieId}:`, error);
-        throw error;
-    });
+    return api.get(`/movies/${movieId}`)
+        .then(response => response.data)
+        .catch(error => {
+            console.error(`Error fetching movie with ID ${movieId}:`, error);
+            throw error;
+        });
 }
 
 export function updateMovie(movieId, updatedData) {
-    return api.put(`/${movieId}`, updatedData)
+    return api.put(`/movies/${movieId}`, updatedData)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error updating movie with ID ${movieId}:`, error);
@@ -43,7 +44,7 @@ export function updateMovie(movieId, updatedData) {
 }
 
 export function deleteMovie(movieId) {
-    return api.delete(`/${movieId}`)
+    return api.delete(`/movies/${movieId}`)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error deleting movie with ID ${movieId}:`, error);
@@ -76,5 +77,5 @@ export function removeFromWatchlist(movieId) {
             console.error(`Error removing movie with ID ${movieId} from watchlist:`, error);
             throw error;
         });
-    }
-    
+}
+       

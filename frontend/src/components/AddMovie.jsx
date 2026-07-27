@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function AddMovie({ movies, setMovies, setPage, editingMovie, setEditingMovie }) {
+function AddMovie({ movies, setMovies, setPage, editingMovie, setEditingMovie, onCreateMovie, onUpdateMovie, onDeleteMovie }) {
 
   // States for controlled inputs
   const [title, setTitle] = useState("");
@@ -24,66 +24,35 @@ function AddMovie({ movies, setMovies, setPage, editingMovie, setEditingMovie })
     }
   }, [editingMovie]);
 
-  // Function to add a new movie
-  function handleSubmit(e) {
-
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // Check if any field is empty
-    if (
-      !title ||
-      !genre ||
-      !year ||
-      !director ||
-      !rating ||
-      !synopsis
-    ) {
+    if (!title || !genre || !year || !director || !rating || !synopsis) {
       alert("Please fill in all fields.");
       return;
     }
 
-    // If editing, update the existing movie
+    const payload = {
+      title,
+      genre,
+      year: Number(year),
+      director,
+      rating: Number(rating),
+      avgRating: Number(rating),
+      poster,
+      synopsis,
+      cast: [],
+      reviews: [],
+    };
+
     if (editingMovie) {
-
-      const updatedMovies = movies.map((movie) =>
-        movie.id === editingMovie.id
-          ? {
-              ...movie,
-              title,
-              genre,
-              year: Number(year),
-              director,
-              rating: Number(rating),
-              poster,
-              synopsis,
-            }
-          : movie
-      );
-
-      setMovies(updatedMovies);
-
+      const movieId = editingMovie._id ?? editingMovie.id;
+      await onUpdateMovie?.(movieId, payload);
       setEditingMovie(null);
-
     } else {
-
-      // Create new movie object
-      const newMovie = {
-        id: movies.length + 1,
-        title,
-        genre,
-        year: Number(year),
-        director,
-        rating: Number(rating),
-        poster,
-        synopsis,
-        cast: [],
-      };
-
-      // Add movie to movies state
-      setMovies([...movies, newMovie]);
+      await onCreateMovie?.(payload);
     }
 
-    // Clear the form
     setTitle("");
     setGenre("");
     setYear("");
@@ -92,7 +61,6 @@ function AddMovie({ movies, setMovies, setPage, editingMovie, setEditingMovie })
     setSynopsis("");
     setPoster("");
 
-    // Go back to Browse page
     setPage("browse");
   }
 

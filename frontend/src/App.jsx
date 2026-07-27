@@ -4,139 +4,167 @@ import NavBar from "./components/NavBar";
 import Watchlist from "./components/Watchlist";
 import AddMovie from "./components/AddMovie";
 import Browse from "./components/Browse";
-
-import { getAllMovies } from "./api/movieApi";
-import { addMovie, updateMovie, deleteMovie } from "./api/movieApi";
-import { getMovieById } from "./api/movieApi";
-import {addToWatchlist, removeFromWatchlist} from "./api/movieApi";
-import { getWatchlist } from "./api/movieApi";
-
+import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist } from "./api/movieApi";
 
 function App() {
-
-  // Current page
   const [page, setPage] = useState("browse");
-
-  // Movies state
   const [movies, setMovies] = useState([]);
-
-  // Watchlist state
   const [watchlist, setWatchlist] = useState([]);
-
-  // Search state
   const [search, setSearch] = useState("");
-
-  // Selected movie for detail view
+  const [genre, setGenre] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
-
-  // Editing movie state
   const [editingMovie, setEditingMovie] = useState(null);
-
-  // Dashboard states
   const [totalMovies, setTotalMovies] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
-
-  // Error and loading states
   const [errors, setErrors] = useState([]);
-  const [isloading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-
-
-  // Dashboard calculation
   useEffect(() => {
-
     setTotalMovies(movies.length);
 
     if (movies.length > 0) {
-
-      const total = movies.reduce(
-        (sum, movie) => sum + Number(movie.rating),
-        0
-      );
-
+      const total = movies.reduce((sum, movie) => sum + Number(movie.rating ?? movie.avgRating ?? 0), 0);
       setAverageRating((total / movies.length).toFixed(1));
-
     } else {
-
       setAverageRating(0);
-
     }
-
   }, [movies]);
 
-  // Fetch movies and watchlist on component mount
   useEffect(() => {
     async function fetchMovies() {
       try {
-        const moviesData = await getAllMovies();
-        setMovies(moviesData);
+        setIsLoading(true);
+        const moviesData = await getAllMovies({ search, genre });
+        setMovies(Array.isArray(moviesData) ? moviesData : []);
       } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-      finally {
+        setErrors((prev) => [...prev, error.message]);
+      } finally {
         setIsLoading(false);
-        try {
-          const watchlistData = await getWatchlist();
-          setWatchlist(watchlistData);
-        } catch (error) {
-          console.error("Error fetching watchlist:", error);
-        }
+      }
     }
 
-  
+    fetchMovies();
+  }, [search, genre]);
+
+  useEffect(() => {
+    async function fetchWatchlist() {
+      try {
+        const watchlistData = await getWatchlist();
+        setWatchlist(Array.isArray(watchlistData) ? watchlistData : []);
+      } catch (error) {
+        setErrors((prev) => [...prev, error.message]);
+      }
+    }
+
+    fetchWatchlist();
+  }, []);
+
+  const handleCreateMovie = async (movieData) => {
+    try {
+      const response = await addMovie(movieData);
+      setMovies((prev) => [...prev, response.movie]);
+      setPage("browse");
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
+  const handleUpdateMovie = async (movieId, movieData) => {
+    try {
+      const response = await updateMovie(movieId, movieData);
+      setMovies((prev) => prev.map((movie) => (movie._id === movieId ? response.movie : movie)));
+      setEditingMovie(null);
+      setPage("browse");
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
+  const handleDeleteMovie = async (movieId) => {
+    try {
+      await deleteMovie(movieId);
+      setMovies((prev) => prev.filter((movie) => movie._id !== movieId));
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
+  const handleAddToWatchlist = async (movieId) => {
+    try {
+      const response = await addToWatchlist(movieId);
+      setWatchlist((prev) => [...prev, response.movie]);
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
+  const handleRemoveFromWatchlist = async (movieId) => {
+    try {
+      await removeFromWatchlist(movieId);
+      setWatchlist((prev) => prev.filter((movie) => movie._id !== movieId));
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#DBDFEA]">
-
       <NavBar setPage={setPage} />
 
+      {errors.length > 0 && (
+        <div className="mx-6 mt-4 rounded bg-red-100 p-3 text-red-700">
+          {errors[errors.length - 1]}
+        </div>
+      )}
+
       {page === "browse" && (
-
         <Browse
-
           movies={movies}
           search={search}
           setSearch={setSearch}
-
+          genre={genre}
+          setGenre={setGenre}
           selectedMovie={selectedMovie}
           setSelectedMovie={setSelectedMovie}
-
           watchlist={watchlist}
-          setWatchlist={setWatchlist}
+          toggleWatchlist={async (movie) => {
+            const movieId = movie._id ?? movie.id;
+            const exists = watchlist.some((item) => (item._id ?? item.id) === movieId);
 
+            if (exists) {
+              await handleRemoveFromWatchlist(movieId);
+            } else {
+              await handleAddToWatchlist(movieId);
+            }
+          }}
           totalMovies={totalMovies}
           averageRating={averageRating}
-
           setEditingMovie={setEditingMovie}
           setPage={setPage}
         />
-
       )}
 
       {page === "watchlist" && (
-
         <Watchlist
-
           watchlist={watchlist}
-          setWatchlist={setWatchlist}
-
+          setWatchlist={handleRemoveFromWatchlist}
         />
-
       )}
 
       {page === "add" && (
-
         <AddMovie
-
           movies={movies}
           setMovies={setMovies}
           setPage={setPage}
           editingMovie={editingMovie}
           setEditingMovie={setEditingMovie}
+          onCreateMovie={handleCreateMovie}
+          onUpdateMovie={handleUpdateMovie}
+          onDeleteMovie={handleDeleteMovie}
         />
-
       )}
 
+      {isLoading && <p className="p-6 text-gray-700">Loading movies...</p>}
     </div>
   );
 }

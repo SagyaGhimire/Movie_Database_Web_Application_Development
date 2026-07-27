@@ -4,12 +4,14 @@ function Browse({
   movies,
   search,
   setSearch,
+  genre,
+  setGenre,
 
   selectedMovie,
   setSelectedMovie,
 
   watchlist,
-  setWatchlist,
+  toggleWatchlist,
 
   totalMovies,
   averageRating,
@@ -17,35 +19,20 @@ function Browse({
   setPage,
 }) {
 
-  // Filter movies according to search text
-  const filteredMovies = movies.filter((movie) =>
-    movie.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredMovies = movies.filter((movie) => {
+    const title = movie.title?.toLowerCase() || "";
+    const normalizedSearch = search.toLowerCase();
+    const matchesSearch = !normalizedSearch || title.includes(normalizedSearch);
+    const matchesGenre = !genre || movie.genre?.toLowerCase() === genre.toLowerCase();
 
-  // Function to add or remove a movie from watchlist
-function toggleWatchlist() {
+    return matchesSearch && matchesGenre;
+  });
 
-  const exists = watchlist.some(
-    (movie) => movie.id === selectedMovie.id
-  );
-
-  if (exists) {
-
-    setWatchlist(
-      watchlist.filter(
-        (movie) => movie.id !== selectedMovie.id
-      )
-    );
-
-  } else {
-
-    setWatchlist([
-      ...watchlist,
-      selectedMovie,
-    ]);
-
+  async function handleToggleWatchlist() {
+    if (selectedMovie) {
+      await toggleWatchlist(selectedMovie);
+    }
   }
-}
   return (
     <div className="p-6">
 
@@ -75,18 +62,42 @@ function toggleWatchlist() {
       </div>
 
       {/* Search */}
-      <input
-        type="text"
-        placeholder="Search movie..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-3 rounded border border-[#AACDDC] mb-6"
-      />
+      <div className="flex flex-col gap-3 md:flex-row mb-6">
+        <input
+          type="text"
+          placeholder="Search movie..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:flex-1 p-3 rounded border border-[#AACDDC]"
+        />
+
+        <select
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          className="p-3 rounded border border-[#AACDDC]"
+        >
+          <option value="">All Genres</option>
+          <option value="Action">Action</option>
+          <option value="Drama">Drama</option>
+          <option value="Comedy">Comedy</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Fantasy">Fantasy</option>
+          <option value="Thriller">Thriller</option>
+        </select>
+      </div>
 
       {/* Movie Detail */}
       {selectedMovie && (
 
-        <div className="bg-[#D2C4B4] rounded p-6 mb-6">
+        <div className="bg-[#D2C4B4] rounded p-6 mb-6 relative">
+
+          {/* Close Button */}
+<button
+  onClick={() => setSelectedMovie(null)}
+  className="absolute top-4 right-4 text-2xl font-bold text-gray-700 hover:text-red-500"
+>
+  Close
+</button>
 
           <h2 className="text-3xl font-bold">
             {selectedMovie.title}
@@ -105,7 +116,7 @@ function toggleWatchlist() {
           </p>
 
           <p>
-            <strong>Rating:</strong> {selectedMovie.rating}
+            <strong>Rating:</strong> {Number(selectedMovie.rating ?? selectedMovie.avgRating ?? 0).toFixed(1)}
           </p>
 
           <p className="mt-3">
@@ -121,15 +132,15 @@ function toggleWatchlist() {
           </p>
 
           <ul className="list-disc ml-6">
-            {selectedMovie.cast.map((actor, index) => (
+            {(selectedMovie.cast || []).map((actor, index) => (
               <li key={index}>{actor}</li>
             ))}
           </ul>
 
           <button
-          onClick={toggleWatchlist}
+          onClick={handleToggleWatchlist}
           className="mt-5 bg-[#AACDDC] px-4 py-2 rounded hover:bg-[#81A6C6]">
-            {watchlist.some((movie) => movie.id === selectedMovie.id)
+            {watchlist.some((movie) => (movie._id ?? movie.id) === (selectedMovie._id ?? selectedMovie.id))
             ? "Remove from Watchlist"
             : "Add to Watchlist"}
             </button>

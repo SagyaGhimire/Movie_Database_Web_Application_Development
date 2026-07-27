@@ -1,10 +1,4 @@
-import threeIdiotsPoster from "../assets/3idiots.jpg";
-import dangalPoster from "../assets/Dangal.jpg";
-import bhoolBhulaiyaa2Poster from "../assets/BhoolBhulaiya2.jpg";
-import housefull4Poster from "../assets/Housefull4.jpg";
-import adipurushPoster from "../assets/adipurush.jpg";
-
-{/* This contains the list of movies with their details like title, genre, year, rating, director, synopsis, cast and poster */}
+/* This contains the list of movies with their details like title, genre, year, rating, director, synopsis, cast and poster */
 
 const movies = [
   {
@@ -14,7 +8,7 @@ const movies = [
     year: 2009,
     rating: 9.0,
     director: "Rajkumar Hirani",
-    poster: threeIdiotsPoster,
+    poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQa0Lkx6quw4IUy_IzLWGYzqPk62Ifcpvw6omkEaegEiA&s=10",
     synopsis:
       "Two friends search for their long-lost college companion while remembering the unforgettable lessons he taught them about life, education, and following their dreams.",
     cast: [
@@ -33,7 +27,7 @@ const movies = [
     rating: 8.4,
     director: "Nitesh Tiwari",
     poster:
-        dangalPoster,
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTABt6XeBNaUcjvEbafru1CDeR0LeDKNyuCrIy9H6O4Kw&s=10",
     synopsis:
       "A former wrestler trains his daughters to become world-class wrestlers despite facing social challenges and criticism.",
     cast: [
@@ -51,7 +45,7 @@ const movies = [
     year: 2022,
     rating: 7.2,
     director: "Anees Bazmee",
-    poster: bhoolBhulaiyaa2Poster,
+    poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq3kU_wGAg8fus4VCEwiH8xTNB8TrNTmRQSWc5zWzNSw&s=10",
     synopsis:
       "A young man gets caught in mysterious events surrounding an old mansion believed to be haunted by an angry spirit.",
     cast: [
@@ -69,7 +63,7 @@ const movies = [
     year: 2019,
     rating: 5.8,
     director: "Farhad Samji",
-    poster: housefull4Poster,
+    poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1RwcrnajnlPbh4PqpGgDYnBT298gOzrDBnS7bHIe4Sg&s=10",
     synopsis:
       "Three couples discover they were reincarnated from the 15th century and try to reunite with their true soulmates.",
     cast: [
@@ -88,7 +82,7 @@ const movies = [
     rating: 3.8,
     director: "Om Raut",
     poster:
-        adipurushPoster,
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRulxVwGKVJNSeOnTtcnSAobBDI9pfn5HfwnxCuxncPzA&s=10",
     synopsis:
       "A modern retelling of the Ramayana that follows Raghava's mission to rescue his wife from the demon king Lankesh.",
     cast: [

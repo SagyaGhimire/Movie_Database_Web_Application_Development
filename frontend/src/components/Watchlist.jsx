@@ -4,7 +4,7 @@ function Watchlist({ watchlist, setWatchlist }) {
   function removeMovie(id) {
 
     const updatedWatchlist = watchlist.filter(
-      (movie) => movie.id !== id
+      (movie) => (movie._id ?? movie.id) !== id
     );
 
     setWatchlist(updatedWatchlist);
@@ -32,7 +32,7 @@ function Watchlist({ watchlist, setWatchlist }) {
           {watchlist.map((movie) => (
 
             <div
-              key={movie.id}
+              key={movie._id ?? movie.id}
               className="bg-stone-100 p-4 rounded border"
             >
 
@@ -53,11 +53,11 @@ function Watchlist({ watchlist, setWatchlist }) {
               </p>
 
               <p>
-                Rating: {movie.rating}
+                Rating: {Number(movie.rating ?? movie.avgRating ?? 0).toFixed(1)}
               </p>
 
               <button
-                onClick={() => removeMovie(movie.id)}
+                onClick={() => removeMovie(movie._id ?? movie.id)}
                 className="mt-4 bg-red-300 px-4 py-2 rounded hover:bg-red-400"
               >
                 Remove from Watchlist

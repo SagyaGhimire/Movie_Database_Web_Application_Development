@@ -7,9 +7,11 @@ function MovieCard({ movie, setSelectedMovie }) {
   let badgeColor = "";
 
   /* This part is for the rating color based on the rating value */
-  if (movie.rating >= 8) {
+  const ratingValue = Number(movie.rating ?? movie.avgRating ?? 0);
+
+  if (ratingValue >= 8) {
     badgeColor = "bg-green-200";
-  } else if (movie.rating >= 5) {
+  } else if (ratingValue >= 5) {
     badgeColor = "bg-amber-200";
   } else {
     badgeColor = "bg-red-300";
@@ -57,7 +59,7 @@ function MovieCard({ movie, setSelectedMovie }) {
         >
           <img src={star} alt="Star" className="w-4 h-4" />
 
-          Rating: {movie.rating}
+          Rating: {ratingValue.toFixed(1)}
         </span>
 
       </div>

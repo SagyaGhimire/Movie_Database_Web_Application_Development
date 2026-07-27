@@ -9,7 +9,7 @@ function MovieGrid({ movies, setSelectedMovie }) {
       {movies.map((movie) => (
 
         <MovieCard
-          key={movie.id}
+          key={movie._id ?? movie.id}
           movie={movie}
           setSelectedMovie={setSelectedMovie}
         />
