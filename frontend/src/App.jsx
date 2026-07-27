@@ -4,10 +4,12 @@ import NavBar from "./components/NavBar";
 import Watchlist from "./components/Watchlist";
 import AddMovie from "./components/AddMovie";
 import Browse from "./components/Browse";
+import Login from "./components/Login";
+import Register from "./components/Register";
 import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist, registerUser, loginUser, addReview, setAuthToken } from "./api/movieApi";
 
 function App() {
-  const [page, setPage] = useState("browse");
+  const [page, setPage] = useState("login");
   const [movies, setMovies] = useState([]);
   const [watchlist, setWatchlist] = useState([]);
   const [search, setSearch] = useState("");
@@ -18,7 +20,6 @@ function App() {
   const [averageRating, setAverageRating] = useState(0);
   const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [authPage, setAuthPage] = useState("login");
   const [authName, setAuthName] = useState("");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
@@ -60,6 +61,7 @@ function App() {
     if (storedToken && storedUser) {
       setAuthToken(storedToken);
       setUser(JSON.parse(storedUser));
+      setPage("browse");
     }
   }, []);
 
@@ -140,7 +142,7 @@ function App() {
     event.preventDefault();
 
     try {
-      const result = authPage === "register"
+      const result = page === "register"
         ? await registerUser({ name: authName, email: authEmail, password: authPassword })
         : await loginUser({ email: authEmail, password: authPassword });
 
@@ -183,7 +185,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#DBDFEA]">
-      <NavBar setPage={setPage} user={user} onLogout={handleLogout} setAuthPage={setAuthPage} />
+      {user && <NavBar setPage={setPage} user={user} onLogout={handleLogout} />}
 
       {errors.length > 0 && (
         <div className="mx-6 mt-4 rounded bg-red-100 p-3 text-red-700">
@@ -191,45 +193,40 @@ function App() {
         </div>
       )}
 
-      {page === "auth" && (
-        <div className="mx-auto mt-10 max-w-md rounded bg-white p-6 shadow">
-          <h2 className="mb-4 text-2xl font-bold">{authPage === "register" ? "Register" : "Login"}</h2>
-          <form onSubmit={handleAuthSubmit} className="flex flex-col gap-3">
-            {authPage === "register" && (
-              <input
-                value={authName}
-                onChange={(e) => setAuthName(e.target.value)}
-                className="rounded border p-2"
-                placeholder="Name"
-              />
-            )}
-            <input
-              value={authEmail}
-              onChange={(e) => setAuthEmail(e.target.value)}
-              className="rounded border p-2"
-              placeholder="Email"
-            />
-            <input
-              type="password"
-              value={authPassword}
-              onChange={(e) => setAuthPassword(e.target.value)}
-              className="rounded border p-2"
-              placeholder="Password"
-            />
-            <button className="rounded bg-[#AACDDC] p-2 font-semibold" type="submit">
-              {authPage === "register" ? "Register" : "Login"}
-            </button>
-          </form>
-          <p className="mt-3 text-sm text-gray-600">
-            {authPage === "register" ? "Already have an account?" : "Need an account?"}
-            <button
-              className="ml-2 font-semibold text-[#81A6C6]"
-              onClick={() => setAuthPage(authPage === "register" ? "login" : "register")}
-            >
-              {authPage === "register" ? "Login" : "Register"}
-            </button>
-          </p>
-        </div>
+      {page === "login" && (
+        <Login
+          onLogin={async (credentials) => {
+            try {
+              const result = await loginUser(credentials);
+              localStorage.setItem("token", result.token);
+              localStorage.setItem("user", JSON.stringify(result.user));
+              setAuthToken(result.token);
+              setUser(result.user);
+              setPage("browse");
+            } catch (error) {
+              setErrors((prev) => [...prev, error.message]);
+            }
+          }}
+          onSwitchToRegister={() => setPage("register")}
+        />
+      )}
+
+      {page === "register" && (
+        <Register
+          onRegister={async (details) => {
+            try {
+              const result = await registerUser(details);
+              localStorage.setItem("token", result.token);
+              localStorage.setItem("user", JSON.stringify(result.user));
+              setAuthToken(result.token);
+              setUser(result.user);
+              setPage("browse");
+            } catch (error) {
+              setErrors((prev) => [...prev, error.message]);
+            }
+          }}
+          onSwitchToLogin={() => setPage("login")}
+        />
       )}
 
       {page === "browse" && (

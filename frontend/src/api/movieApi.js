@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3001/api',
+    baseURL: 'http://localhost:3001',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -16,7 +16,7 @@ export function setAuthToken(token) {
 }
 
 export function getAllMovies(filters = {}) {
-    return api.get('/movies', { params: filters })
+    return api.get('/api/movies', { params: filters })
         .then(response => response.data)
         .catch(error => {
             console.error('Error fetching movies:', error);
@@ -25,7 +25,7 @@ export function getAllMovies(filters = {}) {
 }
 
 export function addMovie(movieData) {
-    return api.post('/movies', movieData)
+    return api.post('/api/movies', movieData)
         .then(response => response.data)
         .catch(error => {
             console.error('Error adding movie:', error);
@@ -34,7 +34,7 @@ export function addMovie(movieData) {
 }
 
 export function getMovieById(movieId) {
-    return api.get(`/movies/${movieId}`)
+    return api.get(`/api/movies/${movieId}`)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error fetching movie with ID ${movieId}:`, error);
@@ -43,7 +43,7 @@ export function getMovieById(movieId) {
 }
 
 export function updateMovie(movieId, updatedData) {
-    return api.put(`/movies/${movieId}`, updatedData)
+    return api.put(`/api/movies/${movieId}`, updatedData)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error updating movie with ID ${movieId}:`, error);
@@ -52,7 +52,7 @@ export function updateMovie(movieId, updatedData) {
 }
 
 export function deleteMovie(movieId) {
-    return api.delete(`/movies/${movieId}`)
+    return api.delete(`/api/movies/${movieId}`)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error deleting movie with ID ${movieId}:`, error);
@@ -61,7 +61,7 @@ export function deleteMovie(movieId) {
 }
 
 export function getWatchlist() {
-    return api.get('/watchlist')
+    return api.get('/api/watchlist')
         .then(response => response.data)
         .catch(error => {
             console.error('Error fetching watchlist:', error);
@@ -70,7 +70,7 @@ export function getWatchlist() {
 }
 
 export function addToWatchlist(movieId) {
-    return api.post(`/watchlist/${movieId}`)
+    return api.post(`/api/watchlist/${movieId}`)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error adding movie with ID ${movieId} to watchlist:`, error);
@@ -79,7 +79,7 @@ export function addToWatchlist(movieId) {
 }
 
 export function removeFromWatchlist(movieId) {
-    return api.delete(`/watchlist/${movieId}`)
+    return api.delete(`/api/watchlist/${movieId}`)
         .then(response => response.data)
         .catch(error => {
             console.error(`Error removing movie with ID ${movieId} from watchlist:`, error);
@@ -106,7 +106,7 @@ export function loginUser(userData) {
 }
 
 export function addReview(movieId, reviewData) {
-    return api.post(`/movies/${movieId}/reviews`, reviewData)
+    return api.post(`/api/movies/${movieId}/reviews`, reviewData)
         .then(response => response.data)
         .catch(error => {
             console.error('Error adding review:', error);

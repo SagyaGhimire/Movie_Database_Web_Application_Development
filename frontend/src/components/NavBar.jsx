@@ -1,4 +1,4 @@
-function NavBar({ setPage, user, onLogout, setAuthPage }) {
+function NavBar({ setPage, user, onLogout }) {
   return (
     <nav className="bg-[#AACDDC] p-5 flex justify-between items-center shadow-md">
       <h1 className="text-3xl font-bold text-gray-800">Movie Database</h1>
@@ -14,7 +14,10 @@ function NavBar({ setPage, user, onLogout, setAuthPage }) {
             <button onClick={onLogout} className="rounded bg-white px-3 py-1 text-sm font-semibold">Logout</button>
           </>
         ) : (
-          <button onClick={() => { setAuthPage("login"); setPage("auth"); }} className="rounded bg-white px-3 py-1 text-sm font-semibold">Login / Register</button>
+          <>
+            <button onClick={() => setPage("login")} className="rounded bg-white px-3 py-1 text-sm font-semibold">Login</button>
+            <button onClick={() => setPage("register")} className="rounded bg-white px-3 py-1 text-sm font-semibold">Register</button>
+          </>
         )}
       </div>
     </nav>

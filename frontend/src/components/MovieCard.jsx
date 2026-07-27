@@ -1,7 +1,22 @@
+import { useState, useEffect } from "react";
 import star from "../assets/star.svg";
+
+const fallbackPosters = {
+  "The Matrix": "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg",
+  Ramayana: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='160' viewBox='0 0 112 160'%3E%3Crect width='112' height='160' fill='%23d1d5db'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23333' font-size='12'%3ERamayana%3C/text%3E%3C/svg%3E",
+};
+
+const defaultPoster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='160' viewBox='0 0 112 160'%3E%3Crect width='112' height='160' fill='%23d1d5db'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23333' font-size='12'%3ENo+Poster%3C/text%3E%3C/svg%3E";
 
 /* This is the MovieCard component(function) which is used to display the movie details in a card format */
 function MovieCard({ movie, setSelectedMovie }) {
+  const [posterSrc, setPosterSrc] = useState("");
+
+  useEffect(() => {
+    const rawPoster = movie.poster || fallbackPosters[movie.title] || defaultPoster;
+    const cleanedPoster = rawPoster.toString().trim().replace(/\s+/g, "");
+    setPosterSrc(cleanedPoster || defaultPoster);
+  }, [movie.poster, movie.title]);
 
   /* This part is for initializing the badge color based on the rating value */
   let badgeColor = "";
@@ -26,9 +41,11 @@ function MovieCard({ movie, setSelectedMovie }) {
 
       {/* This is for displaying the movie poster */}
       <img
-       src={movie.poster}
-       alt={movie.title}
-       className="h-40 w-28 object-cover rounded"/>
+        src={posterSrc}
+        alt={movie.title}
+        onError={() => setPosterSrc("https://via.placeholder.com/112x160?text=No+Poster")}
+        className="h-40 w-28 object-cover rounded"
+      />
 
       {/* This section is for the Movie Details */}
       <div className="flex flex-col justify-between">
