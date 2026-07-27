@@ -7,6 +7,14 @@ const api = axios.create({
     },
 });
 
+export function setAuthToken(token) {
+    if (token) {
+        api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    } else {
+        delete api.defaults.headers.common.Authorization;
+    }
+}
+
 export function getAllMovies(filters = {}) {
     return api.get('/movies', { params: filters })
         .then(response => response.data)
@@ -75,6 +83,33 @@ export function removeFromWatchlist(movieId) {
         .then(response => response.data)
         .catch(error => {
             console.error(`Error removing movie with ID ${movieId} from watchlist:`, error);
+            throw error;
+        });
+}
+
+export function registerUser(userData) {
+    return api.post('/auth/register', userData)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Error registering user:', error);
+            throw error;
+        });
+}
+
+export function loginUser(userData) {
+    return api.post('/auth/login', userData)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Error logging in:', error);
+            throw error;
+        });
+}
+
+export function addReview(movieId, reviewData) {
+    return api.post(`/movies/${movieId}/reviews`, reviewData)
+        .then(response => response.data)
+        .catch(error => {
+            console.error('Error adding review:', error);
             throw error;
         });
 }

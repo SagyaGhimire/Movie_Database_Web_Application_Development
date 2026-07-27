@@ -17,6 +17,12 @@ function Browse({
   averageRating,
   setEditingMovie,
   setPage,
+  user,
+  reviewText,
+  setReviewText,
+  reviewRating,
+  setReviewRating,
+  onReviewSubmit,
 }) {
 
   const filteredMovies = movies.filter((movie) => {
@@ -151,6 +157,33 @@ function Browse({
             }}className="ml-3 bg-yellow-300 px-4 py-2 rounded hover:bg-yellow-400">
                Edit Movie
                </button>
+
+            <div className="mt-6 rounded bg-white p-4">
+              <h3 className="text-xl font-semibold">Leave a Review</h3>
+              <select
+                value={reviewRating}
+                onChange={(e) => setReviewRating(Number(e.target.value))}
+                className="mt-3 rounded border p-2"
+              >
+                {[1,2,3,4,5,6,7,8,9,10].map((value) => (
+                  <option key={value} value={value}>{value}</option>
+                ))}
+              </select>
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                className="mt-3 w-full rounded border p-2"
+                rows="3"
+                placeholder="Write your review"
+              />
+              <button
+                onClick={() => onReviewSubmit(selectedMovie._id ?? selectedMovie.id)}
+                className="mt-3 rounded bg-[#81A6C6] px-4 py-2 text-white"
+                disabled={!user}
+              >
+                {user ? "Submit Review" : "Login to Review"}
+              </button>
+            </div>
                </div>
 
       )}

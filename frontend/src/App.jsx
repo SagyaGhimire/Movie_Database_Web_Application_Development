@@ -4,7 +4,7 @@ import NavBar from "./components/NavBar";
 import Watchlist from "./components/Watchlist";
 import AddMovie from "./components/AddMovie";
 import Browse from "./components/Browse";
-import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist } from "./api/movieApi";
+import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist, registerUser, loginUser, addReview, setAuthToken } from "./api/movieApi";
 
 function App() {
   const [page, setPage] = useState("browse");
@@ -18,6 +18,13 @@ function App() {
   const [averageRating, setAverageRating] = useState(0);
   const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [authPage, setAuthPage] = useState("login");
+  const [authName, setAuthName] = useState("");
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [user, setUser] = useState(null);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(5);
 
   useEffect(() => {
     setTotalMovies(movies.length);
@@ -47,7 +54,19 @@ function App() {
   }, [search, genre]);
 
   useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (storedToken && storedUser) {
+      setAuthToken(storedToken);
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchWatchlist() {
+      if (!user) return;
+
       try {
         const watchlistData = await getWatchlist();
         setWatchlist(Array.isArray(watchlistData) ? watchlistData : []);
@@ -57,7 +76,7 @@ function App() {
     }
 
     fetchWatchlist();
-  }, []);
+  }, [user]);
 
   const handleCreateMovie = async (movieData) => {
     try {
@@ -90,6 +109,11 @@ function App() {
   };
 
   const handleAddToWatchlist = async (movieId) => {
+    if (!user) {
+      setErrors((prev) => [...prev, "Please log in to manage your watchlist"]);
+      return;
+    }
+
     try {
       const response = await addToWatchlist(movieId);
       setWatchlist((prev) => [...prev, response.movie]);
@@ -99,6 +123,11 @@ function App() {
   };
 
   const handleRemoveFromWatchlist = async (movieId) => {
+    if (!user) {
+      setErrors((prev) => [...prev, "Please log in to manage your watchlist"]);
+      return;
+    }
+
     try {
       await removeFromWatchlist(movieId);
       setWatchlist((prev) => prev.filter((movie) => movie._id !== movieId));
@@ -107,13 +136,99 @@ function App() {
     }
   };
 
+  const handleAuthSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const result = authPage === "register"
+        ? await registerUser({ name: authName, email: authEmail, password: authPassword })
+        : await loginUser({ email: authEmail, password: authPassword });
+
+      localStorage.setItem("token", result.token);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      setAuthToken(result.token);
+      setUser(result.user);
+      setAuthEmail("");
+      setAuthPassword("");
+      setAuthName("");
+      setPage("browse");
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setAuthToken(null);
+    setUser(null);
+    setWatchlist([]);
+  };
+
+  const handleReviewSubmit = async (movieId) => {
+    if (!user) {
+      setErrors((prev) => [...prev, "Please log in to post a review"]);
+      return;
+    }
+
+    try {
+      const response = await addReview(movieId, { rating: reviewRating, comment: reviewText });
+      setMovies((prev) => prev.map((movie) => (movie._id === movieId ? response.movie : movie)));
+      setReviewText("");
+      setReviewRating(5);
+    } catch (error) {
+      setErrors((prev) => [...prev, error.message]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#DBDFEA]">
-      <NavBar setPage={setPage} />
+      <NavBar setPage={setPage} user={user} onLogout={handleLogout} setAuthPage={setAuthPage} />
 
       {errors.length > 0 && (
         <div className="mx-6 mt-4 rounded bg-red-100 p-3 text-red-700">
           {errors[errors.length - 1]}
+        </div>
+      )}
+
+      {page === "auth" && (
+        <div className="mx-auto mt-10 max-w-md rounded bg-white p-6 shadow">
+          <h2 className="mb-4 text-2xl font-bold">{authPage === "register" ? "Register" : "Login"}</h2>
+          <form onSubmit={handleAuthSubmit} className="flex flex-col gap-3">
+            {authPage === "register" && (
+              <input
+                value={authName}
+                onChange={(e) => setAuthName(e.target.value)}
+                className="rounded border p-2"
+                placeholder="Name"
+              />
+            )}
+            <input
+              value={authEmail}
+              onChange={(e) => setAuthEmail(e.target.value)}
+              className="rounded border p-2"
+              placeholder="Email"
+            />
+            <input
+              type="password"
+              value={authPassword}
+              onChange={(e) => setAuthPassword(e.target.value)}
+              className="rounded border p-2"
+              placeholder="Password"
+            />
+            <button className="rounded bg-[#AACDDC] p-2 font-semibold" type="submit">
+              {authPage === "register" ? "Register" : "Login"}
+            </button>
+          </form>
+          <p className="mt-3 text-sm text-gray-600">
+            {authPage === "register" ? "Already have an account?" : "Need an account?"}
+            <button
+              className="ml-2 font-semibold text-[#81A6C6]"
+              onClick={() => setAuthPage(authPage === "register" ? "login" : "register")}
+            >
+              {authPage === "register" ? "Login" : "Register"}
+            </button>
+          </p>
         </div>
       )}
 
@@ -141,6 +256,12 @@ function App() {
           averageRating={averageRating}
           setEditingMovie={setEditingMovie}
           setPage={setPage}
+          user={user}
+          reviewText={reviewText}
+          setReviewText={setReviewText}
+          reviewRating={reviewRating}
+          setReviewRating={setReviewRating}
+          onReviewSubmit={handleReviewSubmit}
         />
       )}
 
