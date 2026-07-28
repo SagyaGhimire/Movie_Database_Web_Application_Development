@@ -9,7 +9,7 @@ import {
     getWatchlist,
     addToWatchlist,
     removeFromWatchlist,
-} from "../controllers/movieController.js";
+} from "../controllers/MovieController.js";
 
 import {
     movieRules,

@@ -10,7 +10,7 @@ import {
     removeFromWatchlist as removeFromWatchlistInModel,
     updateMovie as updateMovieInModel,
     addReview as addReviewToModel,
-} from "../models/movieModel.js";
+} from "../models/MovieModel.js";
 
 export const getAllMovies = async (req, res) => {
     const movies = await getAllMoviesFromModel({
