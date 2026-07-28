@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import * as AuthModel from "../models/authModel,js";
+import * as AuthModel from "../models/authModel.js";
 
 export async function registerUser(req, res) {
     try {
