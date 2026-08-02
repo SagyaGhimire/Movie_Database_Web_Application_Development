@@ -7,30 +7,23 @@ import dbConnection from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 
 
-const app = express();
 dotenv.config();
+
+const requiredEnvs = ["MONGO_URI", "JWT_SECRET"];
+const missingEnvs = requiredEnvs.filter((name) => !process.env[name]);
+
+if (missingEnvs.length > 0) {
+    console.error("Missing required environment variables:", missingEnvs.join(", "));
+    process.exit(1);
+}
+
+const app = express();
 
 app.use(cookieParse());
 app.use(express.json());
-app.get('/health', (req, res)=> res.status(200).json({ok:true}))
-app.use(cors(
-    {
-        origin: (origin, callback) => {
-
-    const allowedOrigins = [
-        "http://localhost:5173"
-    ];
-
-    if (!origin || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-    }
-
-    callback(new Error("CORS origin not allowed"));
-
-}
-    }
-));
-
+app.get('/', (req, res) => res.status(200).json({ ok: true, message: 'Backend API is running' }));
+app.get('/health', (req, res) => res.status(200).json({ ok: true }));
+app.use(cors({ origin: true, credentials: true }));
 
 const PORT = process.env.PORT || 3001;
 
