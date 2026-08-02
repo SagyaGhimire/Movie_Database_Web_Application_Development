@@ -5,6 +5,7 @@ import cors from "cors";
 import { randomFillSync } from "crypto";
 import movieRoutes from "./routes/movieRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import dbConnection from "./config/db.js";
 
 if (!globalThis.crypto) {
     globalThis.crypto = {
