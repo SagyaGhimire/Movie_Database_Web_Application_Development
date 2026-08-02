@@ -2,10 +2,22 @@ import cookieParse from 'cookie-parser'
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import { randomFillSync } from "crypto";
 import movieRoutes from "./routes/movieRoutes.js";
-import dbConnection from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 
+if (!globalThis.crypto) {
+    globalThis.crypto = {
+        getRandomValues: (buffer) => {
+            randomFillSync(buffer);
+            return buffer;
+        }
+    };
+}
+
+if (typeof global !== 'undefined' && !global.crypto) {
+    global.crypto = globalThis.crypto;
+}
 
 dotenv.config();
 
