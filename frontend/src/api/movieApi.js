@@ -7,8 +7,15 @@ const api = axios.create({
     },
 });
 
+const normalizeToken = (token) => {
+    if (!token || token === 'undefined' || token === 'null') {
+        return null;
+    }
+    return token.toString().trim();
+};
+
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = normalizeToken(localStorage.getItem('token'));
     if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
@@ -29,8 +36,9 @@ api.interceptors.response.use(
 );
 
 export function setAuthToken(token) {
-    if (token) {
-        api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    const normalized = normalizeToken(token);
+    if (normalized) {
+        api.defaults.headers.common.Authorization = `Bearer ${normalized}`;
     } else {
         delete api.defaults.headers.common.Authorization;
     }

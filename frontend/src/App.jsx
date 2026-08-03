@@ -58,10 +58,13 @@ function App() {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
-    if (storedToken && storedUser) {
+    if (storedToken && storedUser && storedToken !== "undefined" && storedToken !== "null") {
       setAuthToken(storedToken);
       setUser(JSON.parse(storedUser));
       setPage("browse");
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     }
   }, []);
 
