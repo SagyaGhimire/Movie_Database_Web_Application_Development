@@ -165,6 +165,9 @@ function App() {
     setAuthToken(null);
     setUser(null);
     setWatchlist([]);
+    setPage("login");
+    setSelectedMovie(null);
+    setErrors([]);
   };
 
   const handleReviewSubmit = async (movieId) => {
