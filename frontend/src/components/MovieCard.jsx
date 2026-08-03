@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import star from "../assets/star.svg";
 
 const fallbackPosters = {
-  "The Matrix": "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg",
-  Ramayana: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='160' viewBox='0 0 112 160'%3E%3Crect width='112' height='160' fill='%23d1d5db'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23333' font-size='12'%3ERamayana%3C/text%3E%3C/svg%3E",
+  "The Matrix": "https://via.placeholder.com/112x160.png?text=The+Matrix",
+  Ramayana: "https://via.placeholder.com/112x160.png?text=Ramayana",
 };
 
-const defaultPoster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='112' height='160' viewBox='0 0 112 160'%3E%3Crect width='112' height='160' fill='%23d1d5db'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23333' font-size='12'%3ENo+Poster%3C/text%3E%3C/svg%3E";
+const defaultPoster = "https://via.placeholder.com/112x160.png?text=No+Poster";
 
 /* This is the MovieCard component(function) which is used to display the movie details in a card format */
 function MovieCard({ movie, setSelectedMovie }) {
