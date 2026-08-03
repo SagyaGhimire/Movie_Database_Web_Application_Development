@@ -10,12 +10,13 @@ const defaultPoster = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 
 /* This is the MovieCard component(function) which is used to display the movie details in a card format */
 function MovieCard({ movie, setSelectedMovie }) {
-  const [posterSrc, setPosterSrc] = useState("");
+  const [posterSrc, setPosterSrc] = useState(defaultPoster);
 
   useEffect(() => {
-    const rawPoster = movie.poster || fallbackPosters[movie.title] || defaultPoster;
-    const cleanedPoster = rawPoster.toString().trim();
-    setPosterSrc(cleanedPoster || defaultPoster);
+    const rawPoster = movie.poster?.toString().trim() || "";
+    const hasValidUrl = /^https?:\/\//i.test(rawPoster) || rawPoster.startsWith("data:image/");
+    const resolvedPoster = hasValidUrl ? rawPoster : fallbackPosters[movie.title] || defaultPoster;
+    setPosterSrc(resolvedPoster);
   }, [movie.poster, movie.title]);
 
   /* This part is for initializing the badge color based on the rating value */
