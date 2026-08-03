@@ -11,6 +11,7 @@ import {
     updateMovie as updateMovieInModel,
     addReview as addReviewToModel,
 } from "../models/MovieModel.js";
+import { getAIRecommendations } from "../services/geminiAPI.js";
 
 export const getAllMovies = async (req, res) => {
     const movies = await getAllMoviesFromModel({
@@ -172,3 +173,21 @@ export const addReview = async (req, res) => {
         movie,
     });
 };
+
+export const recommendMovies = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const watchlist = Array.isArray(req.body.watchlist) ? req.body.watchlist : [];
+    const databaseMovies = await getAllMoviesFromModel({});
+    const availableTitles = databaseMovies.map((movie) => movie.title).filter(Boolean);
+
+    try {
+        const recommendations = await getAIRecommendations({ watchlist, availableTitles });
+        return res.json({ recommendations });
+    } catch (error) {
+        return res.status(500).json({ message: error.message || "AI recommendation failed" });
+    }
+};
+

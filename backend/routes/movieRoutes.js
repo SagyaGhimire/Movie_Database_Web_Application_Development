@@ -10,6 +10,7 @@ import {
     addToWatchlist,
     removeFromWatchlist,
     addReview,
+    recommendMovies,
 } from "../controllers/MovieController.js";
 
 import authenticate from "../middleware/auth.js";
@@ -31,6 +32,9 @@ router.delete("/movies/:id", deleteMovie);
 router.get("/watchlist", authenticate, getWatchlist);
 router.post("/watchlist/:id", authenticate, addToWatchlist);
 router.delete("/watchlist/:id", authenticate, removeFromWatchlist);
+
+// AI Recommendation Route
+router.post("/ai/recommend", authenticate, recommendMovies);
 
 // Review Route
 router.post("/movies/:id/reviews", authenticate, addReview);

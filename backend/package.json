@@ -16,6 +16,7 @@
     "node": "18.x"
   },
   "dependencies": {
+    "@google/genai": "^0.5.0",
     "axios": "^1.18.1",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
