@@ -14,7 +14,7 @@ function MovieCard({ movie, setSelectedMovie }) {
 
   useEffect(() => {
     const rawPoster = movie.poster || fallbackPosters[movie.title] || defaultPoster;
-    const cleanedPoster = rawPoster.toString().trim().replace(/\s+/g, "");
+    const cleanedPoster = rawPoster.toString().trim();
     setPosterSrc(cleanedPoster || defaultPoster);
   }, [movie.poster, movie.title]);
 

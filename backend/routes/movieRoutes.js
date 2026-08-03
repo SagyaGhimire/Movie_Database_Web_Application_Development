@@ -9,8 +9,10 @@ import {
     getWatchlist,
     addToWatchlist,
     removeFromWatchlist,
+    addReview,
 } from "../controllers/MovieController.js";
 
+import authenticate from "../middleware/auth.js";
 import {
     movieRules,
     validateMovie,
@@ -26,8 +28,11 @@ router.put("/movies/:id", updateMovie);
 router.delete("/movies/:id", deleteMovie);
 
 // Watchlist Routes
-router.get("/watchlist", getWatchlist);
-router.post("/watchlist/:id", addToWatchlist);
-router.delete("/watchlist/:id", removeFromWatchlist);
+router.get("/watchlist", authenticate, getWatchlist);
+router.post("/watchlist/:id", authenticate, addToWatchlist);
+router.delete("/watchlist/:id", authenticate, removeFromWatchlist);
+
+// Review Route
+router.post("/movies/:id/reviews", authenticate, addReview);
 
 export default router;

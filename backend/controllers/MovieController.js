@@ -157,6 +157,10 @@ export const addReview = async (req, res) => {
         return res.status(400).json({ message: "Invalid movie ID" });
     }
 
+    if (!req.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const movie = await addReviewToModel(req.params.id, req.body, req.user);
 
     if (!movie) {
