@@ -1,7 +1,71 @@
 import axios from "axios";
 
-const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
-const GA_MODEL = process.env.GENAI_MODEL || "gemini-3.6-flash";
+const credential =
+  process.env.GOOGLE_API_KEY ||
+  process.env.GOOGLE_ACCESS_TOKEN ||
+  process.env.GOOGLE_OAUTH_TOKEN ||
+  process.env.GEMINI_API_KEY ||
+  process.env.GEMINI_BEARER_TOKEN;
+const API_BASE_URLS = process.env.GENAI_API_BASE_URLS
+  ? process.env.GENAI_API_BASE_URLS.split(",").map((url) => url.trim()).filter(Boolean)
+  : [
+      "https://generativelanguage.googleapis.com/v1beta2",
+      "https://generativelanguage.googleapis.com/v1",
+      "https://gemini.googleapis.com/v1",
+    ];
+const MODEL_NAMES = process.env.GENAI_MODEL
+  ? [process.env.GENAI_MODEL]
+  : ["text-bison-001", "gemini-1.0", "gemini-1.0-mini", "gemini-1.0-prose"];
+
+const isBearerCredential = (value) => {
+  return typeof value === "string" && /^(AQ|ya29\.|ya29_)/.test(value);
+};
+
+const getModelEndpoints = () => {
+  const useBearerOnly = isBearerCredential(credential);
+  return API_BASE_URLS.flatMap((baseUrl) =>
+    MODEL_NAMES.flatMap((modelName) => {
+      const modelTextPath = `models/${modelName}:generateText`;
+      const modelGeneratePath = `models/${modelName}:generate`;
+      const bearerHeaders = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${credential}`,
+      };
+      const queryKeyHeaders = {
+        "Content-Type": "application/json",
+      };
+
+      const endpoints = [];
+      if (!useBearerOnly) {
+        endpoints.push(
+          {
+            url: `${baseUrl}/${modelTextPath}?key=${credential}`,
+            headers: queryKeyHeaders,
+            description: `${baseUrl} ${modelName} query-key generateText`,
+          },
+          {
+            url: `${baseUrl}/${modelGeneratePath}?key=${credential}`,
+            headers: queryKeyHeaders,
+            description: `${baseUrl} ${modelName} query-key generate`,
+          }
+        );
+      }
+      endpoints.push(
+        {
+          url: `${baseUrl}/${modelTextPath}`,
+          headers: bearerHeaders,
+          description: `${baseUrl} ${modelName} bearer generateText`,
+        },
+        {
+          url: `${baseUrl}/${modelGeneratePath}`,
+          headers: bearerHeaders,
+          description: `${baseUrl} ${modelName} bearer generate`,
+        }
+      );
+      return endpoints;
+    })
+  );
+};
 
 const normalizeText = (text) => {
   return typeof text === "string" ? text.trim() : "";
@@ -54,8 +118,8 @@ const createFallbackRecommendations = (watchlist, availableTitles) => {
 };
 
 export async function getAIRecommendations({ watchlist = [], availableTitles = [] }) {
-  if (!apiKey) {
-    throw new Error("GOOGLE_API_KEY or GEMINI_API_KEY is not configured in backend .env.");
+  if (!credential) {
+    throw new Error("GOOGLE_API_KEY, GEMINI_API_KEY, or valid bearer credential is not configured in backend .env.");
   }
 
   const favoriteGenres = getTopGenres(watchlist);
@@ -63,13 +127,37 @@ export async function getAIRecommendations({ watchlist = [], availableTitles = [
 
   // Call Generative API via REST to avoid SDK issues in some deployment environments
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta2/models/${GA_MODEL}:generateText?key=${apiKey}`;
-    const resp = await axios.post(url, {
-      prompt: { text: normalizeText(prompt) },
-      temperature: 0.2,
-      maxOutputTokens: 512,
-    }, { timeout: 30000 });
+    let resp;
+    const endpoints = getModelEndpoints();
+    const failures = [];
 
+    for (const endpoint of endpoints) {
+      try {
+        resp = await axios.post(endpoint.url, {
+          prompt: { text: normalizeText(prompt) },
+          temperature: 0.2,
+          maxOutputTokens: 512,
+        }, {
+          headers: endpoint.headers,
+          timeout: 30000,
+        });
+        break;
+      } catch (innerErr) {
+        const status = innerErr.response?.status || 'no-status';
+        const detail = innerErr.response?.data || innerErr.message;
+        failures.push({ endpoint: endpoint.description, status, detail });
+        console.warn(`GenAI attempt failed (${endpoint.description}):`, status, detail);
+        if (innerErr.response?.status === 404) {
+          continue;
+        }
+        throw innerErr;
+      }
+    }
+
+    if (!resp) {
+      const details = failures.map((failure) => `${failure.endpoint}=${failure.status}`).join(", ");
+      throw new Error(`No reachable Generative API endpoint (${details})`);
+    }
     const body = resp.data || {};
     const candidate = (body.candidates && body.candidates[0]) || body.candidate || body.output?.[0] || body;
     const outputText = normalizeText(candidate?.output || candidate?.content || candidate?.text || body.output?.[0]?.content || "");
@@ -79,15 +167,15 @@ export async function getAIRecommendations({ watchlist = [], availableTitles = [
       return parsed.recommendations.slice(0, 3);
     }
   } catch (err) {
-    console.error("GenAI REST call failed, falling back:", err?.message || err);
+    console.error("GenAI REST call failed, falling back:", err?.message || err, err?.response?.data || "no response body");
   }
 
   return createFallbackRecommendations(watchlist, availableTitles);
 }
 
 export async function generateAIResponse(prompt) {
-  if (!apiKey) {
-    const e = new Error('GOOGLE_API_KEY or GEMINI_API_KEY is not configured in backend .env.');
+  if (!credential) {
+    const e = new Error('GOOGLE_API_KEY, GEMINI_API_KEY, or valid bearer credential is not configured in backend .env.');
     e.status = 500;
     throw e;
   }
@@ -95,15 +183,44 @@ export async function generateAIResponse(prompt) {
   const input = normalizeText(prompt || "");
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta2/models/${GA_MODEL}:generateText?key=${apiKey}`;
-    const resp = await axios.post(url, { prompt: { text: input }, temperature: 0.2, maxOutputTokens: 512 }, { timeout: 30000 });
+    let resp;
+    const endpoints = getModelEndpoints();
+    const failures = [];
+
+    for (const endpoint of endpoints) {
+      try {
+        resp = await axios.post(endpoint.url, {
+          prompt: { text: input },
+          temperature: 0.2,
+          maxOutputTokens: 512,
+        }, {
+          headers: endpoint.headers,
+          timeout: 30000,
+        });
+        break;
+      } catch (innerErr) {
+        const status = innerErr.response?.status || 'no-status';
+        const detail = innerErr.response?.data || innerErr.message;
+        failures.push({ endpoint: endpoint.description, status, detail });
+        console.warn(`GenAI attempt failed (${endpoint.description}):`, status, detail);
+        if (innerErr.response?.status === 404) {
+          continue;
+        }
+        throw innerErr;
+      }
+    }
+    if (!resp) {
+      const details = failures.map((failure) => `${failure.endpoint}=${failure.status}`).join(", ");
+      throw new Error(`No reachable Generative API endpoint (${details})`);
+    }
     const body = resp.data || {};
     const candidate = (body.candidates && body.candidates[0]) || body.candidate || body.output?.[0] || body;
     const outputText = normalizeText(candidate?.output || candidate?.content || candidate?.text || body.output?.[0]?.content || "");
     return outputText;
   } catch (err) {
-    console.error("generateAIResponse error:", err?.message || err);
-    const e = new Error('AI service error');
+    const message = err?.response?.data?.error?.message || err?.message || 'AI service error';
+    console.error("generateAIResponse error:", message, err?.response?.data || "no response body");
+    const e = new Error(message);
     e.status = err?.response?.status || 500;
     throw e;
   }
