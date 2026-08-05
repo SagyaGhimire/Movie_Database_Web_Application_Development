@@ -142,4 +142,14 @@ export function addReview(movieId, reviewData) {
             throw error;
         });
 }
+
+export function getAIRecommendations(watchlist) {
+    return api.post('/api/ai/recommend', { watchlist })
+        .then(response => response.data)
+        .catch(error => {
+            const message = error.response?.data?.message || error.response?.data?.error || error.message || 'Failed to fetch AI recommendations.';
+            console.error('Error fetching AI recommendations:', message, error.response?.data || error);
+            throw new Error(message);
+        });
+}
        

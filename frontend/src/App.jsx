@@ -6,7 +6,7 @@ import AddMovie from "./components/AddMovie";
 import Browse from "./components/Browse";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist, registerUser, loginUser, addReview, setAuthToken } from "./api/movieApi";
+import { getAllMovies, addMovie, updateMovie, deleteMovie, addToWatchlist, removeFromWatchlist, getWatchlist, registerUser, loginUser, addReview, getAIRecommendations, setAuthToken } from "./api/movieApi";
 
 function App() {
   const [page, setPage] = useState("login");
@@ -26,6 +26,9 @@ function App() {
   const [user, setUser] = useState(null);
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(5);
+  const [recommendations, setRecommendations] = useState([]);
+  const [isRecommending, setIsRecommending] = useState(false);
+  const [recommendationError, setRecommendationError] = useState("");
 
   useEffect(() => {
     setTotalMovies(movies.length);
@@ -168,9 +171,31 @@ function App() {
     setAuthToken(null);
     setUser(null);
     setWatchlist([]);
+    setRecommendations([]);
     setPage("login");
     setSelectedMovie(null);
     setErrors([]);
+  };
+
+  const handleRecommend = async () => {
+    if (!user) {
+      setErrors((prev) => [...prev, "Please log in to get recommendations"]);
+      return;
+    }
+
+    try {
+      setIsRecommending(true);
+      setRecommendationError("");
+      const response = await getAIRecommendations(watchlist);
+      setRecommendations(Array.isArray(response.recommendations) ? response.recommendations : response);
+    } catch (error) {
+      setRecommendations([]);
+      const errMsg = error?.response?.data?.message || error?.message || "Failed to fetch AI recommendations";
+      setRecommendationError(errMsg);
+      console.error("AI recommendation failed:", error?.message || error);
+    } finally {
+      setIsRecommending(false);
+    }
   };
 
   const handleReviewSubmit = async (movieId) => {
@@ -221,12 +246,8 @@ function App() {
         <Register
           onRegister={async (details) => {
             try {
-              const result = await registerUser(details);
-              localStorage.setItem("token", result.token);
-              localStorage.setItem("user", JSON.stringify(result.user));
-              setAuthToken(result.token);
-              setUser(result.user);
-              setPage("browse");
+              await registerUser(details);
+              setPage("login");
             } catch (error) {
               setErrors((prev) => [...prev, error.message]);
             }
@@ -271,7 +292,11 @@ function App() {
       {page === "watchlist" && (
         <Watchlist
           watchlist={watchlist}
-          setWatchlist={handleRemoveFromWatchlist}
+          onRemove={handleRemoveFromWatchlist}
+          onRecommend={handleRecommend}
+          recommendations={recommendations}
+          isLoading={isRecommending}
+          error={recommendationError}
         />
       )}
 
