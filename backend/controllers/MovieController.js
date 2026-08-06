@@ -11,7 +11,7 @@ import {
     updateMovie as updateMovieInModel,
     addReview as addReviewToModel,
 } from "../models/MovieModel.js";
-import { getAIRecommendations } from "../services/geminiAPI.js";
+import { getAIRecommendations } from "../services/groqAI.js";
 
 export const getAllMovies = async (req, res) => {
     const movies = await getAllMoviesFromModel({

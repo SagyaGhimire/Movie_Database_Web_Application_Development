@@ -187,7 +187,16 @@ function App() {
       setIsRecommending(true);
       setRecommendationError("");
       const response = await getAIRecommendations(watchlist);
-      setRecommendations(Array.isArray(response.recommendations) ? response.recommendations : response);
+      const recList = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.recommendations)
+        ? response.recommendations
+        : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.recommendations)
+        ? response.data.recommendations
+        : [];
+      setRecommendations(recList);
     } catch (error) {
       setRecommendations([]);
       const errMsg = error?.response?.data?.message || error?.message || "Failed to fetch AI recommendations";

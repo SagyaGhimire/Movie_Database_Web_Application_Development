@@ -1,4 +1,14 @@
 function AIRecommendations({ recommendations = [], isLoading, error }) {
+  const recList = Array.isArray(recommendations)
+    ? recommendations
+    : Array.isArray(recommendations?.recommendations)
+    ? recommendations.recommendations
+    : Array.isArray(recommendations?.data)
+    ? recommendations.data
+    : Array.isArray(recommendations?.data?.recommendations)
+    ? recommendations.data.recommendations
+    : [];
+
   return (
     <section className="mb-6 rounded-[32px] border border-[#D3C2A4] bg-[#F7EDD9] p-6 shadow-sm">
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -13,22 +23,25 @@ function AIRecommendations({ recommendations = [], isLoading, error }) {
               Thinking...
             </>
           ) : (
-            `${recommendations.length} recommendation${recommendations.length === 1 ? "" : "s"}`
+            `${recList.length} recommendation${recList.length === 1 ? "" : "s"}`
           )}
         </div>
       </div>
 
-
-      {isLoading ? (
+      {error ? (
+        <div className="rounded-2xl border border-red-300 bg-red-50 p-4 text-red-700">
+          {error}
+        </div>
+      ) : isLoading ? (
         <div className="flex items-center justify-center rounded-2xl border border-[#D3C2A4] bg-[#F5E6D4] p-8 text-[#6F5A42]">
           <div className="flex items-center gap-3">
             <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#6F5A42] border-t-transparent" />
             <span>Generating movie recommendations from your watchlist…</span>
           </div>
         </div>
-      ) : recommendations?.length > 0 ? (
+      ) : recList.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-1">
-          {recommendations.map((item, index) => (
+          {recList.map((item, index) => (
             <article key={`${item.title}-${index}`} className="rounded-3xl border border-[#D3B98F] bg-[#F6E3D0] p-6 shadow-sm">
               <div className="mb-3 flex items-center justify-between gap-4">
                 <div>
